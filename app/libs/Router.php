@@ -68,7 +68,7 @@ class Router
         $url = explode('/', $query);
 
         // Possibly a Custom file so save the filename.
-        // e.g. /custom/styles.css
+        // e.g. /custom/custom.css
         if (count($url) > 1) {
             $this->params['f'] = $url[1];
         }
