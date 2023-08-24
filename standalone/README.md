@@ -17,9 +17,13 @@ A sample Nginx site configuration file can be found in *standalone/lorg.nginx.co
 ### Configure nginx
 
 > sudo rm /etc/nginx/sites-enabled/default
+
 > sudo cp /var/www/lorg/standalone/lorg.nginx.conf /etc/nginx/sites-available/lorg
+
 > sudo ln -s /etc/nginx/sites-available/lorg /etc/nginx/sites-enabled/lorg
+
 > sudo nginx -t
+
 > sudo systemctl restart nginx
 
 **lorg** is now running on port 80. Ideally it should be run over HTTPS either directly from this instance of *nginx* or via Nginx Proxy Mnager/HAProxy/Traefic/etc. This is beyond the scope of this instruction set and well documented elsewhere on the web.
