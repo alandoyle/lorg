@@ -48,10 +48,10 @@ services:
 
 ### Volumes
 
-| Path    | Description                           |
-|---------|---------------------------------------|
-| `/var/www/config` | path for lorg configuration files |
-| `/var/www/custom` | path for lorg override files      |
+| Path                   | Description                       |
+|------------------------|-----------------------------------|
+| `/var/www/lorg/config` | path for lorg configuration files |
+| `/var/www/lorg/custom` | path for lorg override files      |
 
 ## Standalone Setup
 
