@@ -1,10 +1,10 @@
 # lorg
 
-(Pronounced Lur-Ugh - An Irish word meaning "Track, trace; seek, search for." )[https://www.teanglann.ie/en/fgb/lorg]
+[(Pronounced Lur-Ugh - An Irish word meaning "Track, trace; seek, search for." )](https://www.teanglann.ie/en/fgb/lorg)
 
 A framework and javascript free privacy respecting Google Proxy originally based on a cut-down version of LibreX but now evolved into lightweight, powerful API driven Google Meta Search Engine.
 
-## Docker Setup
+## Docker Setup (Recommended)
 
 Available on [DockerHub](https://hub.docker.com/r/alandoyle/lorg)
 ```bash
@@ -51,7 +51,7 @@ services:
 | Path    | Description                           |
 |---------|---------------------------------------|
 | `/var/www/config` | path for lorg configuration files |
-| `/var/www/custom` | path for lorg ovwerride files     |
+| `/var/www/custom` | path for lorg override files      |
 
 ## Standalone Setup
 
