@@ -26,4 +26,4 @@ A sample Nginx site configuration file can be found in *standalone/lorg.nginx.co
 
 > sudo systemctl restart nginx
 
-**lorg** is now running on port 80. Ideally it should be run over HTTPS either directly from this instance of *nginx* or via Nginx Proxy Mnager/HAProxy/Traefic/etc. This is beyond the scope of this instruction set and well documented elsewhere on the web.
+**lorg** is now running on port 80. Ideally it should be run over HTTPS either directly from this instance of *nginx* or via Nginx Proxy Mnager/HAProxy/Traefik/etc. This is beyond the scope of this instruction set and well documented elsewhere on the web.
