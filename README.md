@@ -4,6 +4,8 @@
 
 A framework and javascript free privacy respecting Google Proxy originally based on a cut-down version of LibreX but now evolved into lightweight, powerful API driven Google Meta Search Engine.
 
+![lorg screenshot](https://raw.githubusercontent.com/alandoyle/lorg/main/screenshot/screenshot1.png)
+
 ## Docker Setup (Recommended)
 
 Available on [DockerHub](https://hub.docker.com/r/alandoyle/lorg)
