@@ -16,8 +16,8 @@ docker pull alandoyle/lorg
 ```bash
 docker run --name=lorg \
   -d --init \
-  -v <MY_CONFIG_PATH>:/var/www/config \
-  -v <MY_CUSTOM_PATH>:/var/www/custom \
+  -v <MY_CONFIG_PATH>:/var/www/lorg/config \
+  -v <MY_CUSTOM_PATH>:/var/www/lorg/custom \
   -p 8000:80/tcp \
   alandoyle/lorg:latest
 ```
@@ -36,8 +36,8 @@ services:
    ports:
      - "8000:80/tcp"
    volumes:
-     - ./lorg/config:/var/www/config
-     - ./lorg/data:/var/www/custom
+     - ./lorg/config:/var/www/lorg/config
+     - ./lorg/data:/var/www/lorg/custom
 ```
 
 ### Ports
@@ -55,8 +55,4 @@ services:
 
 ## Standalone Setup
 
-Tested on Debian 11/Ubuntu 22.04 but should run on any recent version of Linux with nginx and PHP 7 or higher.
-
-> sudo apt install php php-fpm php-dom php-curl nginx git -y
-
-A sample Nginx site configuration file can be found in *standalone/lorg.nginx.conf*.
+See [(Standalone Instructions)](https://github.com/alandoyle/lorg/blob/main/standalone/README.md) for more information.
