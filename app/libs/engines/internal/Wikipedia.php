@@ -74,9 +74,7 @@ class Wikipedia {
 
                 // See if there's a thumbnail available.
                 if (array_key_exists("thumbnail",  $first_page)) {
-                    $response["image_url"] = ($config['use_image_proxy'] === true) ?
-                                              $config['base_url'].'/imageproxy?url='.$first_page["thumbnail"]["source"] :
-                                              $first_page["thumbnail"]["source"];
+                    $response["image_url"] = get_image_url($first_page["thumbnail"]["source"], $config);
                 }
             }
         }

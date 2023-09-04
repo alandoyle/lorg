@@ -13,12 +13,16 @@
  */
 
  class FaviconIcoModel extends Model {
-    protected $defaultFaviconIco = '../app/default/favicon.ico';
-    protected $customFaviconIco = '../custom/favicon.ico';
+    protected $defaultFaviconIco = '';
+    protected $customFaviconIco = '';
 
     public function __construct($config)
     {
         parent::__construct($config);
+
+        // Set defaults
+        $this->defaultFaviconIco = "$this->basedir/app/default/favicon.ico";
+        $this->customFaviconIco  = "$this->basedir/custom/favicon.ico";
     }
 
     public function readData($params = [])

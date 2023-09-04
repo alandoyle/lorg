@@ -26,13 +26,13 @@
         $this->getLogo();
         $this->getCategories($this->data['type']);
         $this->getSearchResults($this->data['query'], $this->data['type'], $this->data['pagenum']);
-//debug_array($this->data);
+//@@@debug_array($this->data);
     }
 
     private function getLogo()
     {
         // Override the Search page logo (if available).
-        if (file_exists('../custom/logo.svg')) {
+        if (file_exists("$this->basedir/custom/logo.svg")) {
             $this->data['sitelogo'] = 'site-logo-search';
         }
     }
@@ -71,9 +71,18 @@
             curl_multi_exec($mh, $running);
         } while ($running);
 
+        if (curl_getinfo($search_ch)['http_code'] == '302') {
+            //@@@ TODO Try another instance
+            echo curl_multi_getcontent($search_ch);
+            die();
+        }
+
         // Get search results
         $this->data['results'] = SearchEngine::GetResults($search_ch, $query, $type, $pagenum, $this->config);
-//@@@debug_array($this->data['results']);
+        $this->data['search_url'] = $this->config['search_url'];
+        $this->data['result_count'] = $this->config['result_count'];
+
+//@@@debug_array($this->data);
 
         // Only get Special results for Text searches, first page only.
         $this->data['special'] = SpecialEngine::GetResults($special_ch, $query, $type, $pagenum, $this->config);
@@ -82,6 +91,7 @@
         // Calculate time taken
         $this->data['end_time'] = number_format(microtime(true) - $start_time, 2, '.', '');
         $this->data['engine']   = SearchEngine::GetEngineName($type, $this->config);
+        $this->data['maxpages'] = SearchEngine::GetMaxResults($type, $this->config);
 //@@@debug_array($this->data);
     }
 }

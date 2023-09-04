@@ -13,8 +13,11 @@
  */
 
 class CustomModel extends Model {
+
     public $filetype = 'text/plain';
+
     public $filedata = '';
+
     public $filesize = 0;
 
     public function __construct($config)
@@ -26,12 +29,16 @@ class CustomModel extends Model {
     {
         $filename = array_key_exists('f', $params) ? $params['f'] : 'UNKNOWN';
 
-        $customfile = '../custom/'.$filename;
+        $customfile = "$this->basedir/custom/$filename";
 
         if (file_exists($customfile)) {
             $filetype = file_get_type($customfile);
             $filedata = file_get_contents($customfile);
-            $filesize = filesize($customfile); 
+            $filesize = filesize($customfile);
+        } else if ($filename == 'custom.css') {
+            $filetype = 'text/css';
+            $filedata = '/* Auto-generated Custom CSS */';
+            $filesize = strlen($filedata);
         } else {
             // File doesn't exist so we send a 404
             http_response_code(404);

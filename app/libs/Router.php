@@ -10,20 +10,60 @@
  *
  * App Router class
  * Creates URL and loads controller
- * URL FORMAT  /<controller>?q=<query>&p=<pagenum>&t=<type>
+ * URL FORMAT  /index.php?r=<route>&m=<method>&<...querystring>
+ *
+ **************************************************************************************************/
+
+/**
+ * Main Router class of the MVC framework
  *
  ***************************************************************************************************
- */
-
+ * Properties
+ * ==========
+ * @property-read string $defaultControllerFilename
+ * @property-read string $defaultControllerClassName
+ * @property-read string $defaultMethod
+ * @property-read string $params
+ * @property-read string $basedir
+ *
+ ***************************************************************************************************
+ * Public Methods
+ * ==============
+ * @method void __construct(string $querystring, string $basedir)
+ *
+ ***************************************************************************************************
+ * Private Methods
+ * ===============
+ * @method string genControllerFilename(string $query)
+ * @method string getControllerClassName(string $controllerName)
+ * @method bool isValid(string $controllerName)
+ *
+ **************************************************************************************************/
 class Router
 {
-    protected $defaultControllerName = 'Index';
-    protected $defaultControllerClass = 'IndexController';
+    protected $defaultControllerFilename = 'Index';
+    protected $defaultControllerClassName = 'IndexController';
+    protected $defaultMethod = 'execute';
     protected $params = [];
+    private $basedir = '';
 
-    public function __construct($querystring)
+    /**
+     * Router constructor.
+     *
+     * @param string $querystring
+     * @param string $basedir
+     * @return void
+     */
+    public function __construct($querystring, $basedir)
     {
-        // Build args
+        /*******************************************************************************************
+         * Store the Base Directory
+         ******************************************************************************************/
+        $this->basedir = $basedir;
+
+        /*******************************************************************************************
+         * Build args
+         ******************************************************************************************/
         $queryarray = explode('&',html_entity_decode($querystring));
         foreach ($queryarray as $value) {
             $newarg = explode('=', $value);
@@ -32,63 +72,100 @@ class Router
             }
         }
 
-        // Get Controller name to use.
-        $currentControllerName  = $this->genControllerName(array_key_exists('r', $this->params) ? $this->params['r'] : $this->defaultControllerName);
-        $currentControllerClass = $this->getControllerClassName($currentControllerName);
+        /*******************************************************************************************
+         * Get Controller name to use.
+         ******************************************************************************************/
+        $currentControllerFilename  = $this->genControllerFilename(array_key_exists('r', $this->params) ?
+                                             $this->params['r'] :
+                                             $this->defaultControllerFilename);
+        $currentControllerClassName = $this->getControllerClassName($currentControllerFilename);
 
-        $currentMethod = 'execute'; // Only method supported (so far)
+        /*******************************************************************************************
+         * Get the method to call
+         ******************************************************************************************/
+        $currentMethod = array_key_exists('m', $this->params) ? $this->params['m'] : $this->defaultMethod;
 
-        // Check if Controller exists, otherwise use default Controller (Index)
-        if ($this->isValid($currentControllerName) === false) {
-            // Goto Default route (Index)
-            $currentControllerName  = $this->defaultControllerName;
-            $currentControllerClass = $this->defaultControllerClass;
+        /*******************************************************************************************
+         * Check if Controller exists, otherwise use default Controller (Index)
+         ******************************************************************************************/
+        if ($this->isValid($currentControllerFilename) === false) {
+            /***************************************************************************************
+             * Goto Default route (Index)
+             **************************************************************************************/
+            $currentControllerFilename  = $this->defaultControllerFilename;
+            $currentControllerClassName = $this->defaultControllerClassName;
         }
-        $controller = '../app/controllers/'.$currentControllerName.'.php';
+        $controllerPath = "$this->basedir/app/controllers/$currentControllerFilename.php";
 
-        //require controllers
-        require_once $controller;
-        $currentController = new $currentControllerClass;
+        /*******************************************************************************************
+         * Require controllers
+         ******************************************************************************************/
+        require_once $controllerPath;
+        $currentController = new $currentControllerClassName;
 
-        //check if method exists in controller
+        /*******************************************************************************************
+         * Check if method exists in controller
+         ******************************************************************************************/
         if (method_exists($currentController, $currentMethod) === false) {
             http_response_code(501);
-            die("ERROR: Controller ".$currentControllerName." is missing the ".$currentMethod."() method!");
+            die("ERROR: Controller '$currentControllerFilename' is missing the '$currentMethod()' method!");
         }
 
-        // call a callback with array of params
+        /*******************************************************************************************
+         * Call a callback with array of params
+         ******************************************************************************************/
         call_user_func_array([
             $currentController,
             $currentMethod
             ], [$this->params]);
     }
 
-    private function genControllerName($query)
+    /**
+     * Generate a Controller filename from the incoming route.
+     *
+     * @param string $route
+     * @return string
+     */
+    private function genControllerFilename($route)
     {
-        $url = explode('/', $query);
+        $url = explode('/', $route);
 
-        // Possibly a Custom file so save the filename.
-        // e.g. /custom/custom.css
+        /*******************************************************************************************
+         * Possibly a Custom file so save the filename.
+         *  e.g. /custom/custom.css
+         ******************************************************************************************/
         if (count($url) > 1) {
             $this->params['f'] = $url[1];
         }
 
-        $controllerName = $url[0];
-        $controllerName = ucwords($controllerName, " \t\r\n\f\v.");
-        $controllerName = str_replace('.', '', $controllerName);
+        $controllerFilename = $url[0];
+        $controllerFilename = ucwords($controllerFilename, " \t\r\n\f\v.");
+        $controllerFilename = str_replace('.', '', $controllerFilename);
 
-        return $controllerName;
+        return $controllerFilename;
     }
 
+    /**
+     * Generate a Controller class name.
+     *
+     * @param string $controllerName
+     * @return string
+     */
     private function getControllerClassName($controllerName)
     {
         return $controllerName."Controller";
     }
 
+    /**
+     * Determines if the Controller is a valid one.
+     *
+     * @param string $controllerName
+     * @return bool
+     */
     private function isValid($controllerName)
     {
         $controllerFilename = $controllerName.'.php';
-        $files = glob('../app/controllers/*.php');
+        $files = glob("$this->basedir/app/controllers/*.php");
 
         foreach ($files as $path) {
             $filename = basename($path);

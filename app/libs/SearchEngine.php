@@ -15,33 +15,36 @@
 
  class SearchEngine {
 
-    static function Init($mh, $query, $type, $pagenum, $config)
+    static function Init($mh, $query, $type, $pagenum, &$config)
     {
+        $search_ch = NULL;
         $use_qwant_for_images     = $config['use_qwant_for_images'];
         $use_invidious_for_videos = $config['use_invidious_for_videos'];
-        $search_ch                = NULL;
 
         switch($type)
         {
 /*
             case SEARCH_IMAGE: // Image Search
                 if ($use_qwant_for_images === true) {
-                    $search_ch = QwantEngine::getUrl($mh, $query, $type, $pagenum);
+                    $search_ch = QwantEngine::init($mh, $query, $type, $pagenum);
                 }
+                break;
             case SEARCH_VIDEO: // Video Search
                 if ($use_invidious_for_videos === true) {
-                    $search_ch = InvidiousEngine::getUrl($mh, $query, $type, $pagenum, $config);
+                    $search_ch = InvidiousEngine::init($mh, $query, $type, $pagenum, $config);
                 }
+                break;
 */
             case SEARCH_TEXT: // Text Search
             default:
                 $search_ch = GoogleEngine::init($mh, $query, $type, $pagenum, $config);
+                break;
         }
 
         return $search_ch;
     }
 
-    static function GetResults($search_ch, $query, $type, $pagenum, $config)
+    static function GetResults($search_ch, $query, $type, $pagenum, &$config)
     {
         $use_qwant_for_images     = $config['use_qwant_for_images'];
         $use_invidious_for_videos = $config['use_invidious_for_videos'];
@@ -82,6 +85,29 @@
             case SEARCH_TEXT: // Text Search
             default:
                 return GoogleEngine::getEngineName();
+        }
+    }
+
+    static function GetMaxResults($type, $config)
+    {
+        $use_qwant_for_images     = $config['use_qwant_for_images'];
+        $use_invidious_for_videos = $config['use_invidious_for_videos'];
+
+        switch($type)
+        {
+/*@@@
+            case SEARCH_IMAGE: // Image Search
+                if ($use_qwant_for_images === true) {
+                    return QwantEngine::getMaxResults($type);
+                }
+            case SEARCH_VIDEO: // Video Search
+                if ($use_invidious_for_videos === true) {
+                    return InvidiousEngine::getMaxResults($type);
+                }
+*/
+            case SEARCH_TEXT: // Text Search
+            default:
+                return GoogleEngine::getMaxResults($type);
         }
     }
 }

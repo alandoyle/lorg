@@ -14,10 +14,12 @@
 
 class Model extends Template {
     protected $data = [];
+    protected $basedir = '';
 
     public function __construct($config)
     {
         parent::__construct($config);
+        $this->basedir = $this->config['basedir'];
     }
 
     public function getData()
@@ -28,19 +30,23 @@ class Model extends Template {
     public function getBaseData($params = [])
     {
         $githash = '';
-        if (file_exists("../.git/refs/heads/main")) {
-            $hash = trim(file_get_contents("../.git/refs/heads/main"));
-            $githash = "<a href='https://github.com/alandoyle/lorg/commit/$hash' target='_blank'>Latest commit: $hash</a>";
+        $giturl = '';
+        if (file_exists("$this->basedir/.git/refs/heads/main")) {
+            $githash = trim(file_get_contents("$this->basedir/.git/refs/heads/main"));
+            $giturl = "https://github.com/alandoyle/lorg/commit/$githash";
         }
 
         $this->data = [
-            'githash'     => $githash,
-            'baseurl'     => $this->config['base_url'],
-            'title'       => $this->config['opensearch_title'],
-            'description' => $this->config['opensearch_description'],
-            'encoding'    => $this->config['opensearch_encoding'],
-            'longname'    => $this->config['opensearch_long_name'],
-            'sitelogo'    => 'site-logo-search-default',
+            'githash'      => $githash,
+            'giturl'       => $giturl,
+            'baseurl'      => $this->config['base_url'],
+            'apiurl'       => $this->config['api_url'],
+            'title'        => $this->config['opensearch_title'],
+            'description'  => $this->config['opensearch_description'],
+            'encoding'     => $this->config['opensearch_encoding'],
+            'longname'     => $this->config['opensearch_long_name'],
+            'sitelogo'     => 'site-logo-search-default',
+            'ua'           => $this->config['ua'],
         ];
 
         // Set parameter defaults

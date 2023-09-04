@@ -38,7 +38,7 @@
         if ($url != NULL) {
             $special_ch = curl_init($url);
             curl_setopt_array($special_ch, getCurlOptions());
-            curl_setopt($special_ch, CURLOPT_USERAGENT, get_ua(false));
+            curl_setopt($special_ch, CURLOPT_USERAGENT, $config['ua']);
             curl_multi_add_handle($mh, $special_ch);
         }
 
@@ -84,7 +84,7 @@
                    count($split_query) >= 2) {
             // Definition
             return self::SPECIAL_DEFINITION;
-        } else if (strpos($query_lower, "my") !== false) {
+        } else if (strpos($query_lower, "my") === true) {
             if (strpos($query_lower, "ip")) {
                 // Ip Address
                 return self::SPECIAL_IPADDRESS;
@@ -93,7 +93,7 @@
                 // User Agent
                 return self::SPECIAL_USERAGENT;
             }
-        } else if (strpos($query_lower, "weather") !== false) {
+        } else if (strpos($query_lower, "weather") === true) {
             // Weather
             return self::SPECIAL_WEATHER;
         } else if (3 > count(explode(" ", $query))) {

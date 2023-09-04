@@ -9,11 +9,21 @@
 
  class Template extends BaseClass {
 
+	private $baseDir = '';
+
+	private $template = 'lorg';
+
+	private $minifyOutput = false;
+
 	private $blocks = [];
 
     public function __construct($config)
     {
         parent::__construct($config);
+
+		$this->baseDir      = $this->config['basedir'];
+		$this->minifyOutput = $this->config['minify_output'];
+		$this->template     = $this->config['template'];
     }
 
 	public function render($file, $data = []) {
@@ -25,6 +35,9 @@
 	private function cache($file) {
 		$code = $this->includeFiles($file);
 		$code = $this->compileCode($code);
+		if ($this->minifyOutput === true) {
+			$code = str_replace('> <', '><', preg_replace("/(\s*[\r\n]+\s*|\s+)/", ' ', trim($code)));
+		}
 		return ' ?>'.$code.'<?php ';
 	}
 
@@ -38,7 +51,7 @@
 	}
 
 	private function includeFiles($file) {
-		$code = file_get_contents('../app/template/'.$file);
+		$code = file_get_contents($this->baseDir.'/template/'.$this->template.'/'.$file);
 		preg_match_all('/{% ?(extends|include) ?\'?(.*?)\'? ?%}/i', $code, $matches, PREG_SET_ORDER);
 		foreach ($matches as $value) {
 			$code = str_replace($value[0], $this->includeFiles($value[2]), $code);
@@ -62,8 +75,10 @@
 	private function compileBlock($code) {
 		preg_match_all('/{% ?block ?(.*?) ?%}(.*?){% ?endblock ?%}/is', $code, $matches, PREG_SET_ORDER);
 		foreach ($matches as $value) {
-			if (!array_key_exists($value[1], $this->blocks)) $this->blocks[$value[1]] = '';
-			if (strpos($value[2], '@parent') === false) {
+			if (!array_key_exists($value[1], $this->blocks)) {
+				$this->blocks[$value[1]] = '';
+			}
+			if (strpos($value[2], '@parent') !== true) {
 				$this->blocks[$value[1]] = $value[2];
 			} else {
 				$this->blocks[$value[1]] = str_replace('@parent', $this->blocks[$value[1]], $value[2]);

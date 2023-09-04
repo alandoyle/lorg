@@ -20,10 +20,10 @@ class RobotsTxtController extends Controller {
 
     public function execute()
     {
-        $model = $this->loadModel($this->modelName);
+        $model = $this->LoadModel($this->modelName);
         $model->readData();
 
-        $view = $this->loadView($this->viewName, $model);
+        $view = $this->LoadView($this->viewName, $model);
         $view->renderView();
     }
 }

@@ -16,7 +16,7 @@ class ImageproxyModel extends Model {
 
     public function readData($params = [])
     {
-        $url = array_key_exists('url', $params) ? $params['url'] : false;
+        $url = urldecode(array_key_exists('url', $params) ? $params['url'] : '');
 
         if (empty($url)) {
             $error = "ERROR: No URL provided!";

@@ -13,7 +13,12 @@ return [
     "opensearch_encoding"      => "UTF-8",
     "opensearch_long_name"     => "lorg Metasearch Engine",
 
-    "use_image_proxy"          => true,
+    'template'                 => 'lorg',
+    'use_client_ua'            => false,
+    'link_google_image'        => false,
+    'use_image_proxy'          => true,
+    'minify_output'            => true,
+    'include_local_instance'   => true,
 
     "wikipedia_language"       => "en",
 

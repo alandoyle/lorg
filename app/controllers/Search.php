@@ -19,13 +19,13 @@ class SearchController extends Controller {
 
         // Redirect to base URL if no query
         if (strlen($query) == 0) {
-            $this->redirect_to_url($this->config['base_url']);
+            $this->RedirectToURL($this->config['base_url']);
         }
 
-        $model = $this->loadModel($this->modelName);
+        $model = $this->LoadModel($this->modelName);
         $model->readData($params);
 
-        $view = $this->loadView($this->viewName, $model);
+        $view = $this->LoadView($this->viewName, $model);
         $view->renderView();
     }
 }

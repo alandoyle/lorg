@@ -14,12 +14,14 @@
 
  class RobotsTxtModel extends Model {
     protected $autoRobotTxt = "# Auto-generated robots.txt\nUser-agent: *\nDisallow: /";
-    protected $defaultRobotTxt = '../app/default/robots.txt';
-    protected $customRobotTxt = '../custom/robots.txt';
+    protected $defaultRobotTxt = '';
+    protected $customRobotTxt = '';
 
     public function __construct($config)
     {
         parent::__construct($config);
+        $this->defaultRobotTxt = "$this->basedir/app/default/robots.txt";
+        $this->customRobotTxt  = "$this->basedir/custom/robots.txt";
     }
     public function readData()
     {
