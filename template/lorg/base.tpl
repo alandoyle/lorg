@@ -8,9 +8,10 @@
         <meta name="copyright"content="(c) Alan Doyle [me@alandoyle.com]"/>
         <meta name="engine"content="lorg Metasearch Engine [https://github.com/alandoyle/lorg/]"/>
         <meta name="ua"content="{{ $ua }}"/>
-        <meta name="search_url"content="{{ $search_url }}"/>
+        <meta name="search_url"content="{{ $searchurl }}"/>
         <meta name="base_url"content="{{ $baseurl }}"/>
-        <meta name="apiurl"content="{{ $apiurl }}"/>
+        <meta name="api_url"content="{{ $apiurl }}"/>
+        <meta name="template"content="{{ $template }}"/>
         <meta name="result_count"content="{{ $result_count }}"/>
         <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
         <meta http-equiv="Pragma" content="no-cache"/>

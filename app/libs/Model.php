@@ -19,7 +19,7 @@ class Model extends Template {
     public function __construct($config)
     {
         parent::__construct($config);
-        $this->basedir = $this->config['basedir'];
+        $this->basedir = $config['basedir'];
     }
 
     public function getData()
@@ -45,6 +45,7 @@ class Model extends Template {
             'description'  => $this->config['opensearch_description'],
             'encoding'     => $this->config['opensearch_encoding'],
             'longname'     => $this->config['opensearch_long_name'],
+            'template'     => $this->config['template'],
             'sitelogo'     => 'site-logo-search-default',
             'ua'           => $this->config['ua'],
         ];

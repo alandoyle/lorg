@@ -29,12 +29,12 @@
  ***************************************************************************************************
  * Private Methods
  * ===============
- * @method string  getValue(string $key, int $type)
+ * @method string getValue(string $key, int $type)
  * @method string getRandomApiUrl(array $instances)
+ * @method string getUserAgent()
  *
  **************************************************************************************************/
 class Config extends BaseClass {
-    protected $basedir = '';
     protected $defaults = [];
 
     public function __construct()
@@ -54,6 +54,7 @@ class Config extends BaseClass {
             'opensearch_encoding'      => 'UTF-8',
             'opensearch_long_name'     => 'lorg Metasearch Engine',
             'template'                 => 'lorg',
+            'use_client_ua'            => false,
             'link_google_image'        => false,
             'use_image_proxy'          => true,
             'minify_output'            => true,
@@ -63,24 +64,24 @@ class Config extends BaseClass {
             'use_invidious_for_videos' => false,
             'invidious_url'            => 'https://y.com.sb',
         ];
-
-        /*******************************************************************************************
-         * Load the Configuration.
-         ******************************************************************************************/
-        $this->LoadConfig();
-        $this->basedir = $this->config['basedir'];
     }
 
     /**
      * Load in the application configuration.
      *
-     * @param none
+     * @param string $basedir
      * @return none
      */
-    protected function LoadConfig()
+    protected function LoadConfig($basedir)
     {
         $instances = [];
-        $basedir   = dirname($_SERVER['DOCUMENT_ROOT']);
+
+        /*******************************************************************************************
+         * Calculate the BASEDIR if not given.
+         ******************************************************************************************/
+        if (empty($basedir)) {
+            $basedir = dirname($_SERVER['DOCUMENT_ROOT']);
+        }
 
         /*******************************************************************************************
          * Guesstimate the base URL.
@@ -114,6 +115,7 @@ class Config extends BaseClass {
         $this->config['opensearch_encoding']      = $this->getValue('opensearch_encoding',      VALUE_STRING);
         $this->config['opensearch_long_name']     = $this->getValue('opensearch_long_name',     VALUE_STRING);
         $this->config['template']                 = $this->getValue('template',                 VALUE_STRING);
+        $this->config['use_client_ua']            = $this->getValue('use_client_ua',            VALUE_BOOLEAN);
         $this->config['link_google_image']        = $this->getValue('link_google_image',        VALUE_BOOLEAN);
         $this->config['use_image_proxy']          = $this->getValue('use_image_proxy',          VALUE_BOOLEAN);
         $this->config['minify_output']            = $this->getValue('minify_output',            VALUE_BOOLEAN);
@@ -122,7 +124,7 @@ class Config extends BaseClass {
         $this->config['use_qwant_for_images']     = $this->getValue('use_qwant_for_images',     VALUE_BOOLEAN);
         $this->config['use_invidious_for_videos'] = $this->getValue('use_invidious_for_videos', VALUE_BOOLEAN);
         $this->config['invidious_url']            = $this->getValue('invidious_url',            VALUE_STRING);
-        $this->config['ua']                       = get_ua();
+        $this->config['ua']                       = $this->getUserAgent();
         $this->config['result_count']             = 0;
 
         /*******************************************************************************************
@@ -175,7 +177,7 @@ class Config extends BaseClass {
         }
 
         /*******************************************************************************************
-         * If the '$key' doesn't exist then use the default value.
+         * Set the '$key' to the default value.
          ******************************************************************************************/
         $value = $this->defaults[$key];
 
@@ -211,6 +213,65 @@ class Config extends BaseClass {
         }
 
         return $value;
+    }
+
+    /**
+     * Get a Value from a cookie, otherwise return the default.
+     *
+     * @param string $key
+     * @param int $type
+     * @return string
+     */
+    private function getCookieValue($key, $type)
+    {
+        /*******************************************************************************************
+         * Obtain the default value.
+         ******************************************************************************************/
+        $value = $this->getValue($key, $type);
+
+        /*******************************************************************************************
+         * Check if the cookie is set?
+         ******************************************************************************************/
+        if (isset($_COOKIE[$key]) !== true) {
+            return  $value;
+        }
+
+        /*******************************************************************************************
+         * Validate the '$type' to ensure we don't try to use a sting as a number, etc.
+         * If the contents are invalid then use the default value.
+         ******************************************************************************************/
+        switch ($type)
+        {
+            case VALUE_STRING:
+                if (strlen($_COOKIE[$key]) > 0) {
+                    $value = $_COOKIE[$key];
+                }
+                break;
+            case VALUE_NUMERIC:
+                if (is_numeric($_COOKIE[$key]) === true) {
+                    $value = $_COOKIE[$key];
+                }
+                break;
+            case VALUE_BOOLEAN:
+                if (($_COOKIE[$key] === true) ||
+                    ($_COOKIE[$key] === false)) {
+                    $value = $_COOKIE[$key];
+                }
+                break;
+        }
+
+        return $value;
+    }
+
+    private function getUserAgent()
+    {
+        $enabled_by_cookie = $this->getCookieValue('use_client_ua', VALUE_BOOLEAN);
+
+        if ($this->config['use_client_ua'] == true || $enabled_by_cookie === true) {
+            return $_SERVER["HTTP_USER_AGENT"];
+        }
+
+        return get_random_ua();
     }
 
     /**

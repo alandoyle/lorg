@@ -84,7 +84,7 @@ function get_image_url($imageurl, $config)
  * @param none
  * @return string
  */
-function get_ua()
+function get_random_ua()
 {
     $useragents = array(
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36",
@@ -94,32 +94,101 @@ function get_ua()
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36",
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36",
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0',
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.79 Safari/537.36',
-        'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36',
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36',
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:101.0) Gecko/20100101 Firefox/101.0',
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101 Firefox/99.0',
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/7046A194A',
     );
-
+//@@@ Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36
     return $useragents[array_rand($useragents, 1)];
+}
+
+/**
+ * Get the client hints.
+ *
+ * @param string $ua
+ * @return array
+ */
+function get_client_hints($ua)
+{
+debug_var("Parsing '$ua'...");
+
+    $hints = [];
+
+    $parser = new UserAgentParser($ua);
+debug_array($parser->GetInfo());
+
+    if ($parser->GetPrefix() != 'Firefox') {
+        $os      = $parser->GetOS();
+        $osver   = ''; //$parser->GetOSVersion();
+        $version = $parser->GetVersion();
+        $browser = $parser->GetBrowser();
+        $engine  = $parser->GetEngine();
+        $mobile  = $parser->IsMobile() === true ? '1' : '0';
+
+        $sec_ch_au =
+        $sec_ch_au_mobile =
+        $sec_ch_au_platform =
+        $sec_ch_au_platform_version = '';
+
+        if ($browser != '') {
+            // Add Sec-Ch-Ua
+            $sec_ch_au = "Sec-Ch-Ua: \"$engine\";v=\"$version\", \"Not)A;Brand\";v=\"$version\", \"$browser\";v=\"$version\"";
+            // Add Sec-Ch-Ua-Mobile
+            $sec_ch_au_mobile = "Sec-Ch-Ua-Mobile: ?$mobile";
+            // Add Sec-Ch-Ua-Platform
+            $sec_ch_au_platform = "Sec-Ch-Ua-Platform: $os";
+            // Add Sec-Ch-Ua-Platform-Version
+            $sec_ch_au_platform_version = "Sec-Ch-Ua-Platform-Version: $osver";
+        }
+        $hints = [
+            $sec_ch_au,
+            $sec_ch_au_mobile,
+            'Sec-Ch-Ua-Model:',
+            $sec_ch_au_platform,
+            $sec_ch_au_platform_version,
+        ];
+    }
+
+    // Remove empty array elements
+    $hints = (array_filter($hints, fn($value) => !is_null($value) && $value !== ''));
+    return $hints;
 }
 
 /**
  * Get the CURL options.
  *
- * @param none
+ * @param string $ua
  * @return array
  */
-function getCurlOptions()
+function get_curl_options($ua, $accept_langauge)
 {
+    if (empty($accept_langauge)) {
+        $accept_langauge = 'en-US';
+    }
+
     $headers = [
         'Accept: */*',
-        'Accept-Language: en-US,en;q=0.9',
+        "Accept-Language: $accept_langauge,en;q=0.9",
         'Dnt: 1',
         'Pragma: no-cache',
+        'Sec-Fetch-Mode: navigate',
+        'Sec-Fetch-Site: same-origin',
+        'Sec-Fetch-User: ?1',
         'Upgrade-Insecure-Requests: 1',
     ];
+
+    $client_hints = get_client_hints($ua);
+    $hint_count = count($client_hints);
+
+    if ($hint_count > 0) {
+        $current_hint = 0;
+        while ($current_hint < $hint_count) {
+            $headers[$hint_count + $current_hint] = $client_hints[$current_hint++];
+        }
+    }
+
     return array(
         CURLOPT_RETURNTRANSFER  => true,
         CURLOPT_ENCODING        => "UTF-8",
@@ -138,15 +207,21 @@ function getCurlOptions()
  * Download a file from a remote host.
  *
  * @param string $url
+ * @param string $ua
  * @return array
  */
-function download_url($url)
+function download_url($url, $ua = '')
 {
-    $finfo = new finfo(FILEINFO_MIME);
-    $ua = get_ua();
+    // Make sure we have a User Agent
+    if ($ua == '') {
+        $ua = get_random_ua();
+    }
+
     $ch = curl_init($url);
-    curl_setopt_array($ch, getCurlOptions());
+    curl_setopt_array($ch, get_curl_options($ua));
     curl_setopt($ch, CURLOPT_USERAGENT, $ua);
+
+    $finfo = new finfo(FILEINFO_MIME);
     $filedata = curl_exec($ch);
     $filesize = curl_getinfo($ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
     $filetype = $finfo->buffer($filedata);

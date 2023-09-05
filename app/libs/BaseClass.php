@@ -8,25 +8,37 @@
  ***************************************************************************************************
  *
  * This is the Base class;
- * 
+ *
  ***************************************************************************************************
  */
 
 class BaseClass {
-    public $config = [];
-    public $className = 'UNKNOWN';
+    protected $basedir = '';
+    protected $config = [];
+    protected $className = 'UNKNOWN';
 
-    public function __construct($config = null)
+    public function __construct($config = [])
     {
         $this->className = $this->getClassName();
-        if(is_array($config))
-        {
+        if (count($config) > 0) {
             $this->config = $config;
         }
     }
 
+    public function execute($params)
+    {
+        $basedir = '';
+        if (isset($params['_basedir_'])) {
+            $basedir = $params['_basedir_'];
+        }
+        if(count($this->config) === 0) {
+            $this->LoadConfig($basedir);
+        }
+        $this->basedir = $this->config['basedir'];
+    }
+
     // Get Class Name as a string
-    public function getClassName()
+    private function getClassName()
     {
         return static::class;
     }

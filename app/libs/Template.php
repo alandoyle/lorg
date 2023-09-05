@@ -8,22 +8,17 @@
  */
 
  class Template extends BaseClass {
-
-	private $baseDir = '';
-
 	private $template = 'lorg';
-
 	private $minifyOutput = false;
-
 	private $blocks = [];
 
     public function __construct($config)
     {
         parent::__construct($config);
 
-		$this->baseDir      = $this->config['basedir'];
-		$this->minifyOutput = $this->config['minify_output'];
-		$this->template     = $this->config['template'];
+		$this->basedir      = $config['basedir'];
+		$this->minifyOutput = $config['minify_output'];
+		$this->template     = $config['template'];
     }
 
 	public function render($file, $data = []) {
@@ -51,7 +46,7 @@
 	}
 
 	private function includeFiles($file) {
-		$code = file_get_contents($this->baseDir.'/template/'.$this->template.'/'.$file);
+		$code = file_get_contents($this->basedir.'/template/'.$this->template.'/'.$file);
 		preg_match_all('/{% ?(extends|include) ?\'?(.*?)\'? ?%}/i', $code, $matches, PREG_SET_ORDER);
 		foreach ($matches as $value) {
 			$code = str_replace($value[0], $this->includeFiles($value[2]), $code);

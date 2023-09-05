@@ -71,15 +71,17 @@
             curl_multi_exec($mh, $running);
         } while ($running);
 
-        if (curl_getinfo($search_ch)['http_code'] == '302') {
-            //@@@ TODO Try another instance
-            echo curl_multi_getcontent($search_ch);
-            die();
+        if ($search_ch !== null) {
+            if (curl_getinfo($search_ch)['http_code'] == '302') {
+                //@@@ TODO Try another instance
+                echo curl_multi_getcontent($search_ch);
+                die();
+            }
         }
 
         // Get search results
-        $this->data['results'] = SearchEngine::GetResults($search_ch, $query, $type, $pagenum, $this->config);
-        $this->data['search_url'] = $this->config['search_url'];
+        $this->data['results']      = SearchEngine::GetResults($search_ch, $query, $type, $pagenum, $this->config);
+        $this->data['searchurl']    = $this->config['search_url'];
         $this->data['result_count'] = $this->config['result_count'];
 
 //@@@debug_array($this->data);
