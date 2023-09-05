@@ -24,7 +24,6 @@
  * @property-read string $defaultControllerClassName
  * @property-read string $defaultMethod
  * @property-read string $params
- * @property-read string $basedir
  *
  ***************************************************************************************************
  * Public Methods
@@ -36,7 +35,7 @@
  * ===============
  * @method string genControllerFilename(string $query)
  * @method string getControllerClassName(string $controllerName)
- * @method bool isValid(string $controllerName)
+ * @method bool isValid(string $controllerName, string $basedir)
  *
  **************************************************************************************************/
 class Router
@@ -45,7 +44,6 @@ class Router
     protected $defaultControllerClassName = 'IndexController';
     protected $defaultMethod = 'execute';
     protected $params = [];
-    private $basedir = '';
 
     /**
      * Router constructor.
@@ -57,11 +55,6 @@ class Router
     public function __construct($querystring, $basedir)
     {
         /*******************************************************************************************
-         * Store the Base Directory
-         ******************************************************************************************/
-        $this->basedir = $basedir;
-
-        /*******************************************************************************************
          * Build args
          ******************************************************************************************/
         $queryarray = explode('&',html_entity_decode($querystring));
@@ -71,6 +64,11 @@ class Router
                 $this->params[$newarg[0]] = urldecode($newarg[1]);
             }
         }
+
+        /*******************************************************************************************
+         * Store the Base Directory
+         ******************************************************************************************/
+        $this->params['_basedir_'] = $basedir;
 
         /*******************************************************************************************
          * Get Controller name to use.
@@ -88,14 +86,14 @@ class Router
         /*******************************************************************************************
          * Check if Controller exists, otherwise use default Controller (Index)
          ******************************************************************************************/
-        if ($this->isValid($currentControllerFilename) === false) {
+        if ($this->isValid($currentControllerFilename, $basedir) === false) {
             /***************************************************************************************
              * Goto Default route (Index)
              **************************************************************************************/
             $currentControllerFilename  = $this->defaultControllerFilename;
             $currentControllerClassName = $this->defaultControllerClassName;
         }
-        $controllerPath = "$this->basedir/app/controllers/$currentControllerFilename.php";
+        $controllerPath = "$basedir/app/controllers/$currentControllerFilename.php";
 
         /*******************************************************************************************
          * Require controllers
@@ -160,12 +158,13 @@ class Router
      * Determines if the Controller is a valid one.
      *
      * @param string $controllerName
+     * @param string $basedir
      * @return bool
      */
-    private function isValid($controllerName)
+    private function isValid($controllerName, $basedir)
     {
         $controllerFilename = $controllerName.'.php';
-        $files = glob("$this->basedir/app/controllers/*.php");
+        $files = glob("$basedir/app/controllers/*.php");
 
         foreach ($files as $path) {
             $filename = basename($path);

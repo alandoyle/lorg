@@ -26,7 +26,7 @@ class ImageproxyModel extends Model {
                 'type' => 'text/plain',
             ];
         } else {
-            $this->data  = download_url ($url);
+            $this->data  = download_url($url, $this->config['ua']);
         }
     }
 }
