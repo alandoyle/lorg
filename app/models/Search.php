@@ -40,7 +40,7 @@
     private function getCategories($active)
     {
         // Build up the Category details
-        $mappings = array("general", "images", "videos");
+        $mappings = array("general", "images", "youtube");
         $categories = [];
         foreach ($mappings as $category)
         {

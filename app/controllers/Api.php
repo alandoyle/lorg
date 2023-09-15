@@ -19,8 +19,10 @@ class ApiController extends Controller {
         parent::__construct();
     }
 
-    public function execute($params = [])
+    public function execute($params)
     {
+        parent::execute($params);
+
         $model = $this->LoadModel($this->modelName);
         $model->readData($params);
 

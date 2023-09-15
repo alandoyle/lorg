@@ -13,8 +13,11 @@ return [
     "opensearch_encoding"      => "UTF-8",
     "opensearch_long_name"     => "lorg Metasearch Engine",
 
+    'accept_langauge'          => 'en-GB',
+
     'template'                 => 'lorg',
     'use_client_ua'            => false,
+    'use_specific_ua'          => '',
     'link_google_image'        => false,
     'use_image_proxy'          => true,
     'minify_output'            => true,

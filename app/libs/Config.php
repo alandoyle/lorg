@@ -30,7 +30,7 @@
  * Private Methods
  * ===============
  * @method string getValue(string $key, int $type)
- * @method string getRandomApiUrl(array $instances)
+ * @method string getRandomApiServer(array $instances)
  * @method string getUserAgent()
  *
  **************************************************************************************************/
@@ -53,8 +53,10 @@ class Config extends BaseClass {
             'opensearch_description'   => 'lorg is a metasearch engine that respects your privacy.',
             'opensearch_encoding'      => 'UTF-8',
             'opensearch_long_name'     => 'lorg Metasearch Engine',
+            'accept_langauge'          => 'en-US',
             'template'                 => 'lorg',
             'use_client_ua'            => false,
+            'use_specific_ua'          => '',
             'link_google_image'        => false,
             'use_image_proxy'          => true,
             'minify_output'            => true,
@@ -114,8 +116,10 @@ class Config extends BaseClass {
         $this->config['opensearch_description']   = $this->getValue('opensearch_description',   VALUE_STRING);
         $this->config['opensearch_encoding']      = $this->getValue('opensearch_encoding',      VALUE_STRING);
         $this->config['opensearch_long_name']     = $this->getValue('opensearch_long_name',     VALUE_STRING);
+        $this->config['accept_langauge']          = $this->getValue('accept_langauge',          VALUE_STRING);
         $this->config['template']                 = $this->getValue('template',                 VALUE_STRING);
         $this->config['use_client_ua']            = $this->getValue('use_client_ua',            VALUE_BOOLEAN);
+        $this->config['use_specific_ua']          = $this->getValue('use_specific_ua',          VALUE_STRING);
         $this->config['link_google_image']        = $this->getValue('link_google_image',        VALUE_BOOLEAN);
         $this->config['use_image_proxy']          = $this->getValue('use_image_proxy',          VALUE_BOOLEAN);
         $this->config['minify_output']            = $this->getValue('minify_output',            VALUE_BOOLEAN);
@@ -128,18 +132,26 @@ class Config extends BaseClass {
         $this->config['result_count']             = 0;
 
         /*******************************************************************************************
+         * Enabling 'link_google_image' makes no sense when using Qwant for images!
+         ******************************************************************************************/
+        if ($this->config['use_qwant_for_images'] === true) {
+            $this->config['link_google_image'] = false;
+        }
+
+        /*******************************************************************************************
          * This is the physical directory where the application and configurable files (template,
          * custom files, config, etc.) are located.
          *  e.g. /var/www/lorg
          ******************************************************************************************/
+        $this->basedir = 
         $this->config['basedir'] = $basedir;
 
         /*******************************************************************************************
          * Load any existing instances file.
          ******************************************************************************************/
-        if (file_exists($basedir.'/config/instances.json')) {
-            $contents  = file_get_contents($basedir.'/config/instances.json');
-            $instances = convert_to_array(json_decode($contents));
+        if (file_exists("$basedir/config/instances.json")) {
+            $contents  = file_get_contents("$basedir/config/instances.json");
+            $instances = json_decode($contents, true);
         }
 
         /*******************************************************************************************
@@ -147,12 +159,12 @@ class Config extends BaseClass {
          ******************************************************************************************/
         if ($this->config['include_local_instance'] === true) {
             $instances['instances'][count($instances)] = [
-                $this->config['opensearch_title'] => $this->config['base_url'].'/api'
+                'Name' => 'LocalSite',
+                'URL'  => $this->config['base_url'].'/api',
+                'Type' => 'Local'
             ];
         }
-
-        $api_server = $this->getRandomApiUrl($instances['instances']);
-        $this->config['api_url'] = '';
+        $this->getRandomApiServer($instances['instances']);
     }
 
     /**
@@ -253,35 +265,89 @@ class Config extends BaseClass {
                 }
                 break;
             case VALUE_BOOLEAN:
-                if (($_COOKIE[$key] === true) ||
-                    ($_COOKIE[$key] === false)) {
-                    $value = $_COOKIE[$key];
+                if (($_COOKIE[$key] == 'true') ||
+                    ($_COOKIE[$key] == 'false')) {
+                    $value = ($_COOKIE[$key] == 'true') ? true : false;
                 }
                 break;
         }
 
         return $value;
     }
-
+    /**
+     * Returns a UserAgent based on current configuration preferences.
+     *
+     * @param none
+     * @return string
+     */
     private function getUserAgent()
     {
         $enabled_by_cookie = $this->getCookieValue('use_client_ua', VALUE_BOOLEAN);
+        $ua = '';
 
-        if ($this->config['use_client_ua'] == true || $enabled_by_cookie === true) {
-            return $_SERVER["HTTP_USER_AGENT"];
+        if (empty(trim($this->config['use_specific_ua'])) === false) {
+            $ua = $this->config['use_specific_ua'];
+        } elseif ($this->config['use_client_ua'] === true || $enabled_by_cookie === true) {
+            $ua = $_SERVER["HTTP_USER_AGENT"];
+        } else {
+            $ua = get_random_ua();
         }
 
-        return get_random_ua();
+        return $ua;
     }
 
     /**
-     * Return a random an array.
+     * Return a random API URL from an array.
      *
      * @param array $instances
-     * @return string
+     * @return none
      */
-    private function getRandomApiUrl($instances)
+    private function getRandomApiServer($instances)
     {
-        return '';
+        $count = 0;
+        $found = false;
+
+        do {
+            $instance = $instances[array_rand($instances, 1)];
+            $keyfile  =
+            $contents = '';
+
+            switch (strtolower($instance['Type']))
+            {
+                case 'local':
+                    $keyfile = 'api.key';
+                    break;
+                case 'remote':
+                    $keyfile = $instance['Name'].'.key';
+                    break;
+            }
+
+            /*******************************************************************************************
+             * Load the API Key.
+             ******************************************************************************************/
+            if (file_exists("$this->basedir/config/keys/$keyfile")) {
+                $contents  = file_get_contents("$this->basedir/config/keys/$keyfile");
+                if (strlen(trim($contents)) > 0) {
+                    $this->config['api_url'] = $instance['URL'];
+                    $this->config['api_key'] = trim($contents);
+                    $found = true;
+                }
+            }
+
+            /*******************************************************************************************
+             * Remove duff entries from the instances list.
+             ******************************************************************************************/
+            if ($found === false) {
+                for ($n = 0; $n < count($instances); $n++) {
+                    if ($instances[$n]['Name'] === $instance['Name']) {
+                        unset($instances[$n]);
+                        $instances = array_values($instances);
+                        break;
+                    }
+                }
+            }
+            $count++;
+        }
+        while(($found === false) && ($count < 5));
     }
 }

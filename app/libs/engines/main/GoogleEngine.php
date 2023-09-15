@@ -60,14 +60,14 @@
 
         // Check if "Safe Search" has been enabled in the settings.
         if (isset($_COOKIE['safe_search'])) {
-            $url .= "&safe=medium";
+            $url .= '&safe='.$_COOKIE['safe_search'];
         }
 
         // Save the URL
         $config['search_url'] = $url;
 
         $google_ch = curl_init($url);
-        curl_setopt_array($google_ch, getCurlOptions());
+        curl_setopt_array($google_ch, get_curl_options($config['ua'], $config['accept_langauge']));
         curl_setopt($google_ch, CURLOPT_USERAGENT, $config['ua']);
         curl_multi_add_handle($mh, $google_ch);
 

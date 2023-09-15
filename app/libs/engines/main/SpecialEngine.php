@@ -37,7 +37,7 @@
 
         if ($url != NULL) {
             $special_ch = curl_init($url);
-            curl_setopt_array($special_ch, getCurlOptions());
+            curl_setopt_array($special_ch, get_curl_options($config['ua'], $config['accept_langauge']));
             curl_setopt($special_ch, CURLOPT_USERAGENT, $config['ua']);
             curl_multi_add_handle($mh, $special_ch);
         }
@@ -62,11 +62,13 @@
 
     static function checkQuery($query, $type, $pagenum)
     {
+        $query_type = self::SPECIAL_NOTHING;
+
         // Check if we're a text search on page one.
         // Also check if Special results are disabled in the local settings.
         if (($type != SEARCH_TEXT) || ($pagenum != 0) ||
             isset($_COOKIE["disable_special"])) {
-            return self::SPECIAL_NOTHING;
+            return $query_type;
         }
 
         $query_lower = strtolower($query);
@@ -77,31 +79,31 @@
             $amount_to_convert = floatval($split_query[0]);
             if ($amount_to_convert != 0) {
                 // Currency
-                return self::SPECIAL_CURRENCY;
+                $query_type = self::SPECIAL_CURRENCY;
             }
         } else if ((strpos($query_lower, "mean")) ||
                    (strpos($query_lower, "definition")) &&
                    count($split_query) >= 2) {
             // Definition
-            return self::SPECIAL_DEFINITION;
-        } else if (strpos($query_lower, "my") === true) {
+            $query_type = self::SPECIAL_DEFINITION;
+        } else if (strpos($query_lower, "my") !== false) {
             if (strpos($query_lower, "ip")) {
                 // Ip Address
-                return self::SPECIAL_IPADDRESS;
+                $query_type = self::SPECIAL_IPADDRESS;
             } else if (strpos($query_lower, "user agent") ||
                        strpos($query_lower, "ua")) {
                 // User Agent
-                return self::SPECIAL_USERAGENT;
+                $query_type = self::SPECIAL_USERAGENT;
             }
-        } else if (strpos($query_lower, "weather") === true) {
+        } else if (strpos($query_lower, "weather") !== false) {
             // Weather
-            return self::SPECIAL_WEATHER;
+            $query_type = self::SPECIAL_WEATHER;
         } else if (3 > count(explode(" ", $query))) {
             // Wikipedia
-            return self::SPECIAL_WIKIPEDIA;
+            $query_type = self::SPECIAL_WIKIPEDIA;
         }
 
         // Nothing special
-        return self::SPECIAL_NOTHING;
+        return $query_type;
     }
 }

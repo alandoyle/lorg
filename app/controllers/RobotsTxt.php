@@ -18,8 +18,10 @@ class RobotsTxtController extends Controller {
         parent::__construct();
     }
 
-    public function execute()
+    public function execute($params)
     {
+        parent::execute($params);
+
         $model = $this->LoadModel($this->modelName);
         $model->readData();
 

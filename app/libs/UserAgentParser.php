@@ -16,41 +16,48 @@
 
  class UserAgentParser
  {
-    protected $agent;
-    protected $os;
-    protected $osver;
-    protected $browser;
-    protected $prefix;
-    protected $version;
-    protected $engine;
+    protected $agent    = '';
+    protected $os       = '';
+    protected $osver    = '';
+    protected $model    = '';
+    protected $browser  = '';
+    protected $prefix   = '';
+    protected $version  = '';
+    protected $engine   = '';
     protected $isMobile = false;
 
     protected $oss = [
+        'PlayStation'   => ['PlayStation'],
+        'Xbox'          => ['Xbox','XBOX'],
+        'Nintendo'      => ['Nintendo'],
+        'Windows Phone' => ['Windows Phone'],
         'Android'       => ['Android'],
         'Linux'         => ['linux', 'Linux'],
-        'Mac OS X'      => ['Macintosh', 'Mac OS X'],
         'iOS'           => ['like Mac OS X'],
+        'macOS'         => ['Macintosh', 'Mac OS X'],
         'Windows'       => ['Windows NT', 'win32'],
-        'Windows Phone' => ['Windows Phone'],
         'Chrome OS'     => ['CrOS'],
     ];
     protected $browsers = [
-        'Apple Safari'      => ['Safari'],
-        'Google Chrome'     => ['Chrome'],
+        'Kindle'            => ['Kindle'],
         'Edge'              => ['Edge'],
+        'Google Chrome'     => ['Chrome', 'CriOS'],
+        'Mozilla Firefox'   => ['Firefox','FxiOS'],
+        'PlayStation'       => ['PlayStation'],
+        'Apple Safari'      => ['Safari'],
         'Internet Explorer' => ['MSIE'],
-        'Mozilla Firefox'   => ['Firefox'],
         'Opera'             => ['OPR', 'Opera'],
         'Netscape'          => ['Netscape'],
         'cURL'              => ['curl'],
         'Wget'              => ['Wget'],
+        'Nintendo Browser'  => ['NintendoBrowser'],
     ];
     protected $engines = [
-        'Gecko'    => ['Gecko'],
-        'Chromium' => ['AppleWebKit'],
         'WebKit'   => ['X) AppleWebKit'],
+        'Chromium' => ['AppleWebKit'],
         'EdgeHTML' => ['Edge'],
         'Trident'  => ['Trident', 'MSIE'],
+        'Gecko'    => ['Gecko'],
     ];
 
     public function __construct($agent = null)
@@ -68,9 +75,9 @@
         // Find OS
         foreach ($this->oss as $os => $patterns) {
             foreach ($patterns as $pattern) {
-                if (strpos($this->agent, $pattern) !== false) {
-                    $this->os    = $os;
-                    $this->osver = $this->parseOsVersion($pattern);
+                if ((strpos($this->agent, $pattern) !== false) &&
+                    (empty($this->os) === true)) {
+                    $this->parseOsDetails($os);
                     break;
                 }
             }
@@ -86,9 +93,10 @@
         // Find browser
         foreach ($this->browsers as $browser => $patterns) {
             foreach ($patterns as $pattern) {
-                if (strpos($this->agent, $pattern) !== false) {
+                if ((strpos($this->agent, $pattern) !== false) &&
+                    (empty($this->browser) === true)) {
                     $this->browser = $browser;
-                    $this->prefix = $pattern;
+                    $this->prefix  = $pattern;
                     break;
                 }
             }
@@ -97,7 +105,8 @@
         // Engine
         foreach ($this->engines as $engine => $patterns) {
             foreach ($patterns as $pattern) {
-                if (strpos($this->agent, $pattern) !== false) {
+                if ((strpos($this->agent, $pattern) !== false) &&
+                    (empty($this->engine) === true)) {
                     $this->engine = $engine;
                     break;
                 }
@@ -107,11 +116,14 @@
         // Browser version
         $pattern = '#(?<browser>' . join('|', ['Version', $this->prefix, 'other']) . ')[/ ]+(?<version>[0-9.|a-zA-Z.]*)#';
         preg_match_all($pattern, $this->agent, $matches);
-
-        $this->version = $matches['version'][0];
+        $version = $matches['version'][0];
+        $parts = explode('.', $version);
+        $this->version = is_array($parts) ? $parts[0].'.0' : '';
 
         if (count($matches['browser']) != 1) {
-            $this->version = strripos($this->agent, "Version") < strripos($this->agent, $this->prefix) ? $matches['version'][0] : $matches['version'][1];
+            $version = strripos($this->agent, "Version") < strripos($this->agent, $this->prefix) ? $matches['version'][0] : $matches['version'][1];
+            $parts = explode('.', $version);
+            $this->version = $parts[0].'.0';
         }
     }
 
@@ -126,6 +138,7 @@
             'agent'     => $this->GetAgent(),
             'os'        => $this->GetOS(),
             'osver'     => $this->GetOSVersion(),
+            'model'     => $this->GetModel(),
             'browser'   => $this->GetBrowser(),
             'engine'    => $this->GetEngine(),
             'prefix'    => $this->GetPrefix(),
@@ -154,6 +167,11 @@
         return $this->osver;
     }
 
+    public function GetModel()
+    {
+        return $this->model;
+    }
+
     public function GetBrowser()
     {
         return $this->browser;
@@ -169,26 +187,72 @@
         return $this->version;
     }
 
-    private function parseOsVersion($pattern)
+    private function parseOsDetails($os)
     {
-debug_var("Getting '$pattern' OS version.");
-        $startpoint = strpos($this->agent, $pattern);
-        $length  = strpos($this->agent, ';', $startpoint) - $startpoint;
-        $string = substr($this->agent, $startpoint, $length);
-/*
-        'Android'       => ['Android'],
-        'Linux'         => ['linux', 'Linux'],
-        'macOS'         => ['Macintosh', 'Mac OS X'],
-        'iOS'           => ['like Mac OS X'],
-        'Windows'       => ['Windows NT', 'win32'],
-        'Windows Phone' => ['Windows Phone'],
-        'Chrome OS'     => ['CrOS'],
-*/
-        switch($pattern)
+        $this->os = $os;
+
+        $startpoint = strpos($this->agent, '(');
+        $length  = (strpos($this->agent, ')', $startpoint) - $startpoint) - 1;
+        $verstring = substr($this->agent, $startpoint+1, $length);
+        $details = explode(';', $verstring);
+        if (is_array($details) !== true) {
+            return;
+        }
+
+        switch($os)
         {
-            case 'Windows NT':
+            case 'Android':
+                $count       = count($details);
+                $model       = explode(' Build', trim($details[$count == 5 ? 4 : 2]));
+                $this->model = is_array($model) ? trim($model[0]) : '';
+                $details     = explode(' ', trim($details[$count == 5 ? 2 : 1]));
+                $this->osver = is_array($details) ? trim($details[1]) : '';
+                break;
+            case 'iOS':
+                $model       = explode('/', trim($details[0]));
+                $this->model = is_array($model) ? trim($model[0]) : '';
+                $count       = count($details);
+                $details     = explode(' ', trim($details[$count == 2 ? 1 : 2]));
+                $this->osver = is_array($details) ? trim(str_replace('_', '.', $details[3])) : '';
+                if (is_numeric($this->osver) !== true) {
+                    $this->osver = '';
+                }
+                break;
+            case 'macOS':
+                $details     = explode(' ', trim($details[1]));
+                $osver       = is_array($details) ? trim(str_replace('_', '.', $details[4])) : '';
+                $this->osver = str_replace('_', '.', $osver);
+                break;
+            case 'Nintendo':
+                $this->model = trim($details[0]);
+                if (empty($this->browser)) {
+                    $this->browser = 'Nintendo Browser';
+                }
+                if (empty($this->prefix)) {
+                    $this->prefix  = $os;
+                }
+                break;
+            case 'PlayStation':
+                $model       = explode('/', trim($details[1]));
+                $this->model = is_array($model) ? trim($model[0]) : '';
+                $details     = explode('/', trim($model[1]));
+                $this->osver = is_array($details) ? trim($details[0]) : '';
+                break;
+            case 'Windows':
+                $details     = explode(' ', trim($details[0]));
+                $this->osver = is_array($details) ? trim($details[2]) : '';
+                break;
+            case 'Windows Phone':
+                $model       = explode('_', trim($details[3]));
+                $this->model = is_array($model) ? trim($model[0]) : '';
+                $details     = explode(' ', trim($details[0]));
+                $this->osver = is_array($details) ? trim($details[2]) : '';
+                break;
+            case 'Xbox':
+                $count       = count($details);
+                $model       = explode('_', trim($details[$count == 5 ? 4 : 3]));
+                $this->model = is_array($model) ? trim($model[0]) : '';
                 break;
         }
-        return '';
     }
  }

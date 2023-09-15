@@ -121,38 +121,28 @@ debug_array($parser->GetInfo());
 
     if ($parser->GetPrefix() != 'Firefox') {
         $os      = $parser->GetOS();
-        $osver   = ''; //$parser->GetOSVersion();
+        $osver   = $parser->GetOSVersion();
         $version = $parser->GetVersion();
+        $model   = $parser->GetModel();
         $browser = $parser->GetBrowser();
         $engine  = $parser->GetEngine();
         $mobile  = $parser->IsMobile() === true ? '1' : '0';
 
-        $sec_ch_au =
-        $sec_ch_au_mobile =
-        $sec_ch_au_platform =
-        $sec_ch_au_platform_version = '';
-
+        $count = 0;
         if ($browser != '') {
             // Add Sec-Ch-Ua
-            $sec_ch_au = "Sec-Ch-Ua: \"$engine\";v=\"$version\", \"Not)A;Brand\";v=\"$version\", \"$browser\";v=\"$version\"";
+            if (!empty($version)) { $hints[$count++] =  "Sec-Ch-Ua: \"$engine\";v=\"$version\", \"Not)A;Brand\";v=\"$version\", \"$browser\";v=\"$version\""; }
             // Add Sec-Ch-Ua-Mobile
-            $sec_ch_au_mobile = "Sec-Ch-Ua-Mobile: ?$mobile";
+            $hints[$count++] =  "Sec-Ch-Ua-Mobile: ?$mobile";
+            // Add Sec-Ch-Ua-Model
+            if (!empty($model))   { $hints[$count++] = "Sec-Ch-Ua-Model: $model"; }
             // Add Sec-Ch-Ua-Platform
-            $sec_ch_au_platform = "Sec-Ch-Ua-Platform: $os";
+            if (!empty($os))      { $hints[$count++] = "Sec-Ch-Ua-Platform: $os"; }
             // Add Sec-Ch-Ua-Platform-Version
-            $sec_ch_au_platform_version = "Sec-Ch-Ua-Platform-Version: $osver";
+            if (!empty($osver))   { $hints[$count++] = "Sec-Ch-Ua-Platform-Version: $osver"; }
         }
-        $hints = [
-            $sec_ch_au,
-            $sec_ch_au_mobile,
-            'Sec-Ch-Ua-Model:',
-            $sec_ch_au_platform,
-            $sec_ch_au_platform_version,
-        ];
     }
 
-    // Remove empty array elements
-    $hints = (array_filter($hints, fn($value) => !is_null($value) && $value !== ''));
     return $hints;
 }
 
@@ -218,7 +208,7 @@ function download_url($url, $ua = '')
     }
 
     $ch = curl_init($url);
-    curl_setopt_array($ch, get_curl_options($ua));
+    curl_setopt_array($ch, get_curl_options($ua, ''));
     curl_setopt($ch, CURLOPT_USERAGENT, $ua);
 
     $finfo = new finfo(FILEINFO_MIME);
@@ -265,7 +255,7 @@ function addEllipsis($text)
     }
 
     // Remove any trailing .
-    if (substr($responsetext, -1) === '.') {
+    if (substr($responsetext, -1) == '.') {
         $responsetext = substr($responsetext, 0, strlen($responsetext)-1);
     }
 
@@ -365,26 +355,15 @@ function debug_var($var)
  */
 function debug_array($array)
 {
+    /*******************************************************************************************
+     * Sort the array for ease of readability.
+     ******************************************************************************************/
+    ksort($array, SORT_NATURAL);
+
+    /*******************************************************************************************
+     * Output the sorted array.
+     ******************************************************************************************/
     echo "<pre>";
     print_r($array);
     echo "</pre>\n";
-}
-
-/**
- * Convert an object to an array.
- *
- * @param array $array
- * @return array
- */
-function convert_to_array($array) {
-
-    if (is_object($array)) {
-        $array = get_object_vars($array);
-    }
-
-    if (is_array($array)) {
-        return array_map(null, $array);
-    }
-
-    return $array;
 }

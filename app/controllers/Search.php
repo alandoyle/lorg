@@ -15,6 +15,8 @@ class SearchController extends Controller {
 
     public function execute($params)
     {
+        parent::execute($params);
+
         $query = array_key_exists('q', $params) ? $params['q'] : '';
 
         // Redirect to base URL if no query
