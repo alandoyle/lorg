@@ -23,18 +23,8 @@
     public function readData($params)
     {
         $this->getBaseData($params);
-        $this->getLogo();
         $this->getCategories($this->data['type']);
         $this->getSearchResults($this->data['query'], $this->data['type'], $this->data['pagenum']);
-//@@@debug_array($this->data);
-    }
-
-    private function getLogo()
-    {
-        // Override the Search page logo (if available).
-        if (file_exists("$this->basedir/custom/logo.svg")) {
-            $this->data['sitelogo'] = 'site-logo-search';
-        }
     }
 
     private function getCategories($active)
@@ -84,16 +74,12 @@
         $this->data['searchurl']    = $this->config['search_url'];
         $this->data['result_count'] = $this->config['result_count'];
 
-//@@@debug_array($this->data);
-
         // Only get Special results for Text searches, first page only.
         $this->data['special'] = SpecialEngine::GetResults($special_ch, $query, $type, $pagenum, $this->config);
-//@@@debug_array($this->data['special']);
 
         // Calculate time taken
         $this->data['end_time'] = number_format(microtime(true) - $start_time, 2, '.', '');
         $this->data['engine']   = SearchEngine::GetEngineName($type, $this->config);
-        $this->data['maxpages'] = SearchEngine::GetMaxResults($type, $this->config);
-//@@@debug_array($this->data);
+        $this->data['maxpages'] = 10000; //@@@ REMOVEME
     }
 }

@@ -46,7 +46,13 @@
 	}
 
 	private function includeFiles($file) {
-		$code = file_get_contents($this->basedir.'/template/'.$this->template.'/'.$file);
+		$fullpath = "$this->basedir/template/$this->template/$file";
+		if (file_exists($fullpath)) {
+			$code = file_get_contents($fullpath);
+		}
+		if ($file == 'base.tpl') {
+			$code = $this->gen_base_template();
+		}
 		preg_match_all('/{% ?(extends|include) ?\'?(.*?)\'? ?%}/i', $code, $matches, PREG_SET_ORDER);
 		foreach ($matches as $value) {
 			$code = str_replace($value[0], $this->includeFiles($value[2]), $code);
@@ -90,4 +96,41 @@
 		$code = preg_replace('/{% ?yield ?(.*?) ?%}/i', '', $code);
 		return $code;
 	}
+
+	private function gen_base_template() {
+		return
+'<!DOCTYPE html >
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta charset="UTF-8"/>
+		<meta name="description" content="{{ $description }}"/>
+		<meta name="referrer" content="no-referrer"/>
+		<meta name="copyright" content="(c) Alan Doyle [me@alandoyle.com]"/>
+		<meta name="engine" content="lorg Metasearch Engine [https://github.com/alandoyle/lorg/]"/>
+		<meta name="ua" content="{{ $ua }}"/>
+		<meta name="search_url" content="{{ $searchurl }}"/>
+		<meta name="base_url" content="{{ $baseurl }}"/>
+		<meta name="api_url" content="{{ $apiurl }}"/>
+		<meta name="template" content="{{ $template }}"/>
+		<meta name="result_count" content="{{ $result_count }}"/>
+		<meta name="generated" content="'. date(DATE_RFC2822) .'"/>
+		<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+		<meta http-equiv="Pragma" content="no-cache"/>
+		<meta http-equiv="Expires" content="0"/>
+{% if (!empty($githash)): %}
+		<meta name="git-commit" content="{{ $githash }}"/>
+		<meta name="git-url" content="{{ $giturl }}"/>
+{% endif; %}
+		<link title="{{ $title }}" type="application/opensearchdescription+xml" href="opensearch.xml?method=POST" rel="search"/>
+		<link rel="stylesheet" type="text/css" href="css/styles.css"/>
+		<link rel="stylesheet" type="text/css" href="css/{{ $template }}.css"/>
+		<title>{{ $title }}</title>
+	</head>
+	<body>
+{% yield content %}
+	</body>
+</html>';
+	}
+
 }

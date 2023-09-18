@@ -1,7 +1,7 @@
 {% extends base.tpl %}
 {% block content %}
     <form class="search-container" action="search" method="get" autocomplete="off">
-        <span class="{{ $sitelogo }}" title="{{ $description }}"></span>
+        <span class="site-logo-search-main" title="{{ $description }}"></span>
         <br/>
         <div class="search-button-wrapper">
             <div class="searchbox" style="margin: 0 auto;">
@@ -26,4 +26,5 @@
             <button name="t" value="0" type="submit">Search the Web</button>
         </div>
     </form>
+{% include footer.tpl %}
 {% endblock %}

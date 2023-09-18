@@ -2,7 +2,7 @@
 {% block content %}
     <form class="sub-search-container" method="get" autocomplete="off">
         <span class="logomobile">
-            <a class="no-decoration" href="./" rel="nofollow"><span class="{{ $sitelogo }}" title="{{ $description }}"></span></a>
+            <a class="no-decoration" href="./" rel="nofollow"><span class="site-logo-search" title="{{ $description }}"></span></a>
         </span>
         <div class="search-button-wrapper">
             <div class="sub-searchbox">
@@ -32,26 +32,40 @@
         <hr/>
     </form>
     <div class="text-result-container">
-        VIDEOS HERE
 {% foreach($results as $item): %}
-
+        <div class="text-result-wrapper">
+            <a href="{{ $item['url'] }}">
+                {{ $item['base_url'] }}
+            <h2>{{ $item['title'] }}</h2>
+            <img class="video-img" src="{{ $item['thumbnail'] }}">
+            <br>
+            <span>{{ $item['uploader'] }} - {{ $item['date'] }} - {{ $item['views'] }} views</span>
+            </a>
+        </div>
 {% endforeach; %}
-    </div>
-    <div class="text-result-wrapper"><hr/><span id="time">Fetched the results in {{ $end_time }} seconds using {{ $engine }}.</span></div>
-    <div class="next-page-button-wrapper">
-{% if ($pagenum == 0): %}
-        <a class="next-page-only-button" href="./search?q={{ $query }}&t={{ $type }}&p={{ $pagenum + 10 }}" aria-label="Next page" rel="nofollow">Next &gt;</a>
+{% if ($result_count == 0): %}
+        <h1>No more results.</h1>
 {% endif; %}
-{% if ($pagenum != 0): %}
+    <div class="text-result-wrapper"><hr/><span id="time">Fetched the results in {{ $end_time }} seconds using {{ $engine }}.</span></div>
+    </div>
+    <div class="next-page-button-wrapper">
+        {% if ($pagenum == 0): %}
+        <a class="next-page-only-button" href="./search?q={{ $query }}&t={{ $type }}&p={{ $pagenum + 1 }}" aria-label="Next page" rel="nofollow">Next &gt;</a>
+{% endif; %}
+{% if ($pagenum > 0 && $result_count > 0): %}
         <div class="next-page-button-container">
-            <a class="prev-page-button" href="./search?q={{ $query }}&t={{ $type }}&p={{ $pagenum - 10 }}" style="text-align:right" aria-label="Previous page" rel="nofollow">
+            <a class="prev-page-button" href="./search?q={{ $query }}&t={{ $type }}&p={{ $pagenum - 1 }}" style="text-align:right" aria-label="Previous page" rel="nofollow">
                 <span class="no-highlight">&lt;</span>
             </a>
-            <span class="page-number">Page 2</span>
-            <a class="next-page-button" href="./search?q={{ $query }}&t={{ $type }}&p={{ $pagenum + 10 }}" style="text-align:left" aria-label="Next page" rel="nofollow">
+            <span class="page-number">Page {{ $pagenum + 1 }}</span>
+            <a class="next-page-button" href="./search?q={{ $query }}&t={{ $type }}&p={{ $pagenum + 1 }}" style="text-align:left" aria-label="Next page" rel="nofollow">
                 <span class="no-highlight">&gt;</span>
             </a>
         </div>
 {% endif; %}
+{% if ($pagenum > 0 && $result_count == 0): %}
+        <a class="next-page-only-button" href="./search?q={{ $query }}&t={{ $type }}&p={{ $pagenum - 1 }}" aria-label="Previous page" rel="nofollow">&lt; Previous</a>
+{% endif; %}
     </div>
+{% include footer.tpl %}
 {% endblock %}

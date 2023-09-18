@@ -18,26 +18,15 @@
     static function Init($mh, $query, $type, $pagenum, &$config)
     {
         $search_ch = NULL;
-        $use_qwant_for_images     = $config['use_qwant_for_images'];
-        $use_invidious_for_videos = $config['use_invidious_for_videos'];
 
         switch($type)
         {
-/*
+            case SEARCH_TEXT:  // Text Search
             case SEARCH_IMAGE: // Image Search
-                if ($use_qwant_for_images === true) {
-                    $search_ch = QwantEngine::init($mh, $query, $type, $pagenum);
-                }
+                $search_ch = GoogleEngine::init($mh, $query, $type, $pagenum, $config);
                 break;
             case SEARCH_VIDEO: // Video Search
-                if ($use_invidious_for_videos === true) {
-                    $search_ch = InvidiousEngine::init($mh, $query, $type, $pagenum, $config);
-                }
-                break;
-*/
-            case SEARCH_TEXT: // Text Search
-            default:
-                $search_ch = GoogleEngine::init($mh, $query, $type, $pagenum, $config);
+                $search_ch = InvidiousEngine::init($mh, $query, $type, $pagenum, $config);
                 break;
         }
 
@@ -46,68 +35,25 @@
 
     static function GetResults($search_ch, $query, $type, $pagenum, &$config)
     {
-        $use_qwant_for_images     = $config['use_qwant_for_images'];
-        $use_invidious_for_videos = $config['use_invidious_for_videos'];
-
         switch($type)
         {
-/*
+            case SEARCH_TEXT:  // Text Search
             case SEARCH_IMAGE: // Image Search
-                if ($use_qwant_for_images === true) {
-                    return QwantEngine::getResults($query, $type, $pagenum);
-                }
-            case SEARCH_VIDEO: // Video Search
-                if ($use_invidious_for_videos === true) {
-                    return InvidiousEngine::getResults($query, $type, $pagenum);
-                }
-*/
-            case SEARCH_TEXT: // Text Search
-            default:
                 return GoogleEngine::getResults($search_ch, $query, $type, $config);
+            case SEARCH_VIDEO: // Video Search
+                return InvidiousEngine::getResults($search_ch, $query, $type, $config);
         }
     }
 
     static function GetEngineName($type, $config)
     {
-        $use_qwant_for_images     = $config['use_qwant_for_images'];
-        $use_invidious_for_videos = $config['use_invidious_for_videos'];
-
         switch($type)
         {
-            case SEARCH_IMAGE: // Image Search
-                if ($use_qwant_for_images === true) {
-                    return QwantEngine::getEngineName();
-                }
-            case SEARCH_VIDEO: // Video Search
-                if ($use_invidious_for_videos === true) {
-                    return InvidiousEngine::getEngineName();
-                }
             case SEARCH_TEXT: // Text Search
-            default:
+            case SEARCH_IMAGE: // Image Search
                 return GoogleEngine::getEngineName();
-        }
-    }
-
-    static function GetMaxResults($type, $config)
-    {
-        $use_qwant_for_images     = $config['use_qwant_for_images'];
-        $use_invidious_for_videos = $config['use_invidious_for_videos'];
-
-        switch($type)
-        {
-/*@@@
-            case SEARCH_IMAGE: // Image Search
-                if ($use_qwant_for_images === true) {
-                    return QwantEngine::getMaxResults($type);
-                }
             case SEARCH_VIDEO: // Video Search
-                if ($use_invidious_for_videos === true) {
-                    return InvidiousEngine::getMaxResults($type);
-                }
-*/
-            case SEARCH_TEXT: // Text Search
-            default:
-                return GoogleEngine::getMaxResults($type);
+                return InvidiousEngine::getEngineName();
         }
     }
 }

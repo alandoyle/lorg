@@ -25,7 +25,5 @@ return [
 
     "wikipedia_language"       => "en",
 
-    "use_qwant_for_images"     => false,
-    "use_invidious_for_videos" => false,
     "invidious_url" => "https://y.com.sb",
 ];

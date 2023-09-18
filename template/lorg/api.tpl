@@ -2,7 +2,7 @@
 
 {% block content %}
     <div class="search-container">
-        <span class="{{ $sitelogo }}" title="{{ $description }}"></span>
+        <span class="site-logo-search" title="{{ $description }}"></span>
         <p>Example API request: <a href="{{ $baseurl }}/api?q=debian&p=2&t=0" target="_blank">{{ $baseurl }}/api?q=debian&p=2&t=0</a></p>
         <br/>
         <p>"q" is the keyword</p>

@@ -22,10 +22,5 @@
     public function readData()
     {
         $this->getBaseData();
-
-        // Override the Search page logo (if available).
-        if (file_exists("$this->basedir/custom/logo.svg")) {
-            $this->data['sitelogo'] = 'site-logo-main';
-        }
     }
 }

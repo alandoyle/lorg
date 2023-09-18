@@ -62,8 +62,6 @@ class Config extends BaseClass {
             'minify_output'            => true,
             'include_local_instance'   => true,
             'wikipedia_language'       => 'en',
-            'use_qwant_for_images'     => false,
-            'use_invidious_for_videos' => false,
             'invidious_url'            => 'https://y.com.sb',
         ];
     }
@@ -125,25 +123,16 @@ class Config extends BaseClass {
         $this->config['minify_output']            = $this->getValue('minify_output',            VALUE_BOOLEAN);
         $this->config['include_local_instance']   = $this->getValue('include_local_instance',   VALUE_BOOLEAN);
         $this->config['wikipedia_language']       = $this->getValue('wikipedia_language',       VALUE_STRING);
-        $this->config['use_qwant_for_images']     = $this->getValue('use_qwant_for_images',     VALUE_BOOLEAN);
-        $this->config['use_invidious_for_videos'] = $this->getValue('use_invidious_for_videos', VALUE_BOOLEAN);
         $this->config['invidious_url']            = $this->getValue('invidious_url',            VALUE_STRING);
         $this->config['ua']                       = $this->getUserAgent();
         $this->config['result_count']             = 0;
-
-        /*******************************************************************************************
-         * Enabling 'link_google_image' makes no sense when using Qwant for images!
-         ******************************************************************************************/
-        if ($this->config['use_qwant_for_images'] === true) {
-            $this->config['link_google_image'] = false;
-        }
 
         /*******************************************************************************************
          * This is the physical directory where the application and configurable files (template,
          * custom files, config, etc.) are located.
          *  e.g. /var/www/lorg
          ******************************************************************************************/
-        $this->basedir = 
+        $this->basedir =
         $this->config['basedir'] = $basedir;
 
         /*******************************************************************************************

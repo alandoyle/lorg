@@ -23,11 +23,6 @@
         $number_of_results = isset($_COOKIE['google_number_of_results']) ? trim(htmlspecialchars($_COOKIE['google_number_of_results'])) : $config['google_number_of_results'];
         $query_encoded     = urlencode($query);
 
-        // Google Image search returns a MAX of 20 images.
-        if ($type == SEARCH_IMAGE && $number_of_results > 20) {
-            $number_of_results = 20;
-        }
-
         // Start building the URL.
         $url = "https://www.google.$domain/search?q=$query_encoded";
 
@@ -36,11 +31,7 @@
             case SEARCH_IMAGE: // Image Search
                 $url .= "&oq=$query_encoded&tbm=isch&asearch=ichunk&async=_id:rg_s,_pms:s,_fmt:pc&sourceid=chrome&ie=UTF-8&ijn=$pagenum";
                 break;
-            case SEARCH_VIDEO: // Video Search
-                $url .= "&tbm=vid";
-                break;
             case SEARCH_TEXT: // Text Search
-            default:
                 $startnum = $pagenum * 10;
                 $url .= "&start=$startnum";
                 break;
@@ -80,32 +71,16 @@
         {
             case SEARCH_IMAGE: // Image Search
                 return GoogleEngine::getImageResults($search_ch, $query, $config);
-            case SEARCH_VIDEO: // Video Search
-                return GoogleEngine::getVideoResults($search_ch, $query, $config);
             case SEARCH_TEXT: // Text Search
-            default:
                 return GoogleEngine::getTextResults($search_ch, $config);
+            default:
+                return [];
         }
     }
 
     static function getEngineName()
     {
         return "Google";
-    }
-
-    //@@@ KILL This and replace with 0 results logic.
-    static function getMaxResults($type)
-    {
-        switch($type)
-        {
-            /*case SEARCH_IMAGE: // Image Search
-                return 3;
-            case SEARCH_VIDEO: // Video Search
-                return 3;*/
-            case SEARCH_TEXT: // Text Search
-            default:
-                return 1000000;
-        }
     }
 
     static function getTextResults($search_ch, &$config)
@@ -209,23 +184,6 @@
             );
         }
         $config['result_count'] = $resultcount;
-
-        return $results;
-    }
-
-    static function getVideoResults($search_ch, $query, &$config)
-    {
-        if (curl_getinfo($search_ch)['http_code'] == '302') {
-            //@@@ TODO Try another instance
-            echo curl_multi_getcontent($search_ch);
-            //die();
-        }
-
-        $results     = [];
-        $webresponse = curl_multi_getcontent($search_ch);
-        //$xpath       = get_xpath($webresponse);
-
-        echo($webresponse);
 
         return $results;
     }

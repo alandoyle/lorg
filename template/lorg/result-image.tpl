@@ -2,7 +2,7 @@
 {% block content %}
     <form class="sub-search-container" method="get" autocomplete="off">
         <span class="logomobile">
-            <a class="no-decoration" href="./" rel="nofollow"><span class="{{ $sitelogo }}" title="{{ $description }}"></span></a>
+            <a class="no-decoration" href="./" rel="nofollow"><span class="site-logo-search" title="{{ $description }}"></span></a>
         </span>
         <div class="search-button-wrapper">
             <div class="sub-searchbox">
@@ -36,15 +36,17 @@
             <a title="{{ $item['title'] }}" href="{{ $item['url'] }}" target="_blank" rel="nofollow">
             <img src="{{ $item['thumbnail'] }}">
             </a>
-
 {% endforeach; %}
+{% if ($result_count == 0): %}
+        <h1>No more results.</h1>
+{% endif; %}
     <div class="text-result-wrapper" style="width: 100%;"><hr/><span id="time">Fetched the results in {{ $end_time }} seconds using {{ $engine }}.</span></div>
     </div>
     <div class="next-page-button-wrapper">
 {% if ($pagenum == 0): %}
         <a class="next-page-only-button" href="./search?q={{ $query }}&t={{ $type }}&p={{ $pagenum + 1 }}" aria-label="Next page" rel="nofollow">Next &gt;</a>
 {% endif; %}
-{% if ($pagenum > 0 && $pagenum < $maxpages): %}
+{% if ($pagenum > 0 && $result_count > 0): %}
         <div class="next-page-button-container">
             <a class="prev-page-button" href="./search?q={{ $query }}&t={{ $type }}&p={{ $pagenum - 1 }}" style="text-align:right" aria-label="Previous page" rel="nofollow">
                 <span class="no-highlight">&lt;</span>
@@ -55,8 +57,9 @@
             </a>
         </div>
 {% endif; %}
-{% if ($pagenum == $maxpages): %}
+{% if ($pagenum > 0 && $result_count == 0): %}
         <a class="next-page-only-button" href="./search?q={{ $query }}&t={{ $type }}&p={{ $pagenum - 1 }}" aria-label="Previous page" rel="nofollow">&lt; Previous</a>
 {% endif; %}
     </div>
+{% include footer.tpl %}
 {% endblock %}

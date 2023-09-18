@@ -46,8 +46,9 @@ class Model extends Template {
             'encoding'     => $this->config['opensearch_encoding'],
             'longname'     => $this->config['opensearch_long_name'],
             'template'     => $this->config['template'],
-            'sitelogo'     => 'site-logo-search-default',
             'ua'           => $this->config['ua'],
+            'searchurl'    => '',
+            'result_count' => 0,
         ];
 
         // Set parameter defaults

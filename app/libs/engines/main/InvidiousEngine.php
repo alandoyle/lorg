@@ -14,9 +14,69 @@
  */
 
  class InvidiousEngine {
-    static function getResults($query, $type, $pagenum)
+
+    static function init($mh, $query, $type, $pagenum, &$config)
     {
-        return [];
+        // Start building the URL.
+        $instance_url  = $config['invidious_url'];
+        $query_encoded = urlencode($query);
+        $pagenum       = $pagenum + 1;
+        $url           = "$instance_url/api/v1/search?q=$query_encoded&page=$pagenum";
+
+        // Save the URL
+        $config['search_url'] = $url;
+
+        $invidious_ch = curl_init($url);
+        curl_setopt_array($invidious_ch, get_curl_options($config['ua'], $config['accept_langauge']));
+        curl_setopt($invidious_ch, CURLOPT_USERAGENT, $config['ua']);
+        curl_multi_add_handle($mh, $invidious_ch);
+
+        return $invidious_ch;
+    }
+
+    static function getResults($search_ch, $query, $type, &$config)
+    {
+        if (curl_getinfo($search_ch)['http_code'] == '302') {
+            //@@@ TODO Try another instance
+            echo curl_multi_getcontent($search_ch);
+            //die();
+        }
+
+        $results       = [];
+        $webresponse   = curl_multi_getcontent($search_ch);
+        $json_response = json_decode($webresponse, true);
+        $instance_url  = $config['invidious_url'];
+        $resultcount   = 0;
+
+        foreach ($json_response as $response)
+        {
+            if ($response["type"] == "video")
+            {
+                $title = $response["title"];
+                $url = "https://youtube.com/watch?v=" . $response["videoId"];
+                $uploader = $response["author"];
+                $views = $response["viewCount"];
+                $date = $response["publishedText"];
+                $thumbnail = "$instance_url/vi/" . explode("/vi/", $response["videoThumbnails"][4]["url"])[1];
+
+                array_push($results,
+                    array (
+                        "title"     => htmlspecialchars($title),
+                        "url"       => htmlspecialchars($url),
+                        "base_url"  => htmlspecialchars(get_base_url($url)),
+                        "uploader"  => htmlspecialchars($uploader),
+                        "views"     => htmlspecialchars($views),
+                        "date"      => htmlspecialchars($date),
+                        "thumbnail" => get_image_url($thumbnail, $config)
+                    )
+                );
+                $resultcount++;
+            }
+        }
+
+        $config['result_count'] = $resultcount;
+
+        return $results;
     }
 
     static function getEngineName()
