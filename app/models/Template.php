@@ -7,12 +7,12 @@
  *
  ***************************************************************************************************
  *
- * This is the custom `files` Model.
+ * This is the template `files` Model.
  *
  ***************************************************************************************************
  */
 
-class CustomModel extends Model {
+class TemplateModel extends Model {
 
     public $filetype = 'text/plain';
 
@@ -27,22 +27,22 @@ class CustomModel extends Model {
 
     public function readData($params)
     {
-        $filename = array_key_exists('f', $params) ? $params['f'] : 'UNKNOWN';
+        $filename     = array_key_exists('f', $params) ? $params['f'] : 'UNKNOWN';
+        $template     = $this->config['template'];
+        $templatefile = "$this->basedir/template/$template/$filename";
 
-        $customfile = "$this->basedir/custom/$filename";
-
-        if (file_exists($customfile)) {
-            $filetype = file_get_type($customfile);
-            $filedata = file_get_contents($customfile);
-            $filesize = filesize($customfile);
-        } else if ($filename == 'custom.css') {
+        if (file_exists($templatefile)) {
+            $filetype = file_get_type($templatefile);
+            $filedata = file_get_contents($templatefile);
+            $filesize = filesize($templatefile);
+        } else if ($filename == 'style.css') {
             $filetype = 'text/css';
-            $filedata = '/* Auto-generated Custom CSS */';
+            $filedata = '/* Auto-generated Template CSS */';
             $filesize = strlen($filedata);
         } else {
             // File doesn't exist so we send a 404
             http_response_code(404);
-            $filedata = "ERROR: Unable to load data from '/custom/$filename'";
+            $filedata = "ERROR: Unable to load data from '/template/$filename'";
             $filesize = strlen($filedata);
             $filetype = 'text/plain';
         }

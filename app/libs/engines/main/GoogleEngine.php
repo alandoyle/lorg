@@ -138,7 +138,6 @@
             }
         }
         $config['result_count'] = $resultcount;
-//debug_var("1: result_count = ".$config['result_count']);
 
         return $results;
     }

@@ -8,12 +8,12 @@
  *
  ***************************************************************************************************
  *
- * This is the custom `files` Controller.
+ * This is the template `files` Controller.
  *
  ***************************************************************************************************
  */
 
-class CustomController extends Controller {
+class TemplateController extends Controller {
     public function __construct()
     {
         parent::__construct();

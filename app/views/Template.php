@@ -7,11 +7,11 @@
  *
  ***************************************************************************************************
  *
- * This is the custom `files` View.
+ * This is the template `files` View.
  *
  ***************************************************************************************************
  */
-class CustomView extends View {
+class TemplateView extends View {
     public function __construct($model)
     {
         parent::__construct($model);

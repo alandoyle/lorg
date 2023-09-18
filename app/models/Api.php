@@ -45,7 +45,6 @@
 
         // Get search results
         $results = SearchEngine::GetResults($search_ch, $query, $type, $pagenum, $this->config);
-//@@@debug_array($results);
 
         // Get JSON results.
         $filedata = json_encode($results, JSON_PRETTY_PRINT);

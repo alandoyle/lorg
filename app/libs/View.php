@@ -12,7 +12,7 @@
  ***************************************************************************************************
  */
 
-class View extends Template {
+class View extends TemplateEngine {
     protected $model;
 
     public function __construct($model)

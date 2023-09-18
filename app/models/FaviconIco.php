@@ -22,7 +22,7 @@
 
         // Set defaults
         $this->defaultFaviconIco = "$this->basedir/app/default/favicon.ico";
-        $this->customFaviconIco  = "$this->basedir/custom/favicon.ico";
+        $this->customFaviconIco  = "$this->basedir/template/".$config['template']."/favicon.ico";
     }
 
     public function readData($params = [])

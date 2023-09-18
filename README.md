@@ -2,7 +2,7 @@
 
 [(Pronounced Lur-Ugh - An Irish word meaning "Track, trace; seek, search for." )](https://www.teanglann.ie/en/fgb/lorg)
 
-A framework and javascript free privacy respecting Google Proxy originally based on a cut-down version of LibreX but now evolved into lightweight, powerful API driven Google Meta Search Engine.
+A framework and javascript free privacy respecting Google Text/Image Proxy originally based on a cut-down version of LibreX but now evolved into simple, lightweight API driven Meta Search Engine.
 
 ![lorg screenshot](https://raw.githubusercontent.com/alandoyle/lorg/main/screenshot/screenshot1.png)
 
@@ -19,7 +19,7 @@ docker pull alandoyle/lorg
 docker run --name=lorg \
   -d --init \
   -v <MY_CONFIG_PATH>:/var/www/lorg/config \
-  -v <MY_CUSTOM_PATH>:/var/www/lorg/custom \
+  -v <MY_TEMPLATE_PATH>:/var/www/lorg/template \
   -p 8000:80/tcp \
   alandoyle/lorg:latest
 ```
@@ -39,7 +39,7 @@ services:
      - "8000:80/tcp"
    volumes:
      - ./lorg/config:/var/www/lorg/config
-     - ./lorg/data:/var/www/lorg/custom
+     - ./lorg/template:/var/www/lorg/template
 ```
 
 ### Ports
@@ -50,10 +50,10 @@ services:
 
 ### Volumes
 
-| Path                   | Description                       |
-|------------------------|-----------------------------------|
-| `/var/www/lorg/config` | path for lorg configuration files |
-| `/var/www/lorg/custom` | path for lorg override files      |
+| Path                     | Description                       |
+|--------------------------|-----------------------------------|
+| `/var/www/lorg/config`   | path for lorg configuration files |
+| `/var/www/lorg/template` | path for lorg template files      |
 
 ## Standalone Setup
 

@@ -61,6 +61,9 @@
             curl_multi_exec($mh, $running);
         } while ($running);
 
+        // Only get Special results for Text searches, first page only.
+        $this->data['special'] = SpecialEngine::GetResults($special_ch, $query, $type, $pagenum, $this->config);
+
         if ($search_ch !== null) {
             if (curl_getinfo($search_ch)['http_code'] == '302') {
                 //@@@ TODO Try another instance
@@ -74,12 +77,8 @@
         $this->data['searchurl']    = $this->config['search_url'];
         $this->data['result_count'] = $this->config['result_count'];
 
-        // Only get Special results for Text searches, first page only.
-        $this->data['special'] = SpecialEngine::GetResults($special_ch, $query, $type, $pagenum, $this->config);
-
         // Calculate time taken
         $this->data['end_time'] = number_format(microtime(true) - $start_time, 2, '.', '');
         $this->data['engine']   = SearchEngine::GetEngineName($type, $this->config);
-        $this->data['maxpages'] = 10000; //@@@ REMOVEME
     }
 }

@@ -12,7 +12,7 @@
  ***************************************************************************************************
  */
 
-class Model extends Template {
+class Model extends BaseClass {
     protected $data = [];
     protected $basedir = '';
 
@@ -41,13 +41,13 @@ class Model extends Template {
             'giturl'       => $giturl,
             'baseurl'      => $this->config['base_url'],
             'apiurl'       => $this->config['api_url'],
+            'searchurl'    => '',
             'title'        => $this->config['opensearch_title'],
             'description'  => $this->config['opensearch_description'],
             'encoding'     => $this->config['opensearch_encoding'],
             'longname'     => $this->config['opensearch_long_name'],
             'template'     => $this->config['template'],
             'ua'           => $this->config['ua'],
-            'searchurl'    => '',
             'result_count' => 0,
         ];
 

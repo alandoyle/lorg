@@ -11,19 +11,19 @@ class IndexController extends Controller {
     public function __construct()
     {
         parent::__construct();
-
-        //@@@ TODO - Implement ErrorController
-        /*******************************************************************************************
-         * Index Controller only displays at the base_url
-         ******************************************************************************************/
-        if (empty($_SERVER['QUERY_STRING']) !== true) {
-            $this->RedirectToURL($this->config['base_url']);
-        }
     }
 
     public function execute($params)
     {
         parent::execute($params);
+
+        //@@@ TODO - Implement ErrorController???
+        /*******************************************************************************************
+         * Index Controller only displays at the base_url
+         ******************************************************************************************/
+        if (empty($params['q']) !== true) {
+            $this->RedirectToURL($this->config['base_url']);
+        }
 
         $model = $this->LoadModel($this->modelName);
         $model->readData($params);

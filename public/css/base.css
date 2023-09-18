@@ -23,22 +23,14 @@ p {
     color: var(--result-fg);
 }
 
-.site-logo-main {
+.site-logo {
     display: inline-block;
-    background-image: url(/custom/logo.svg);
-    width: 800px;
-    height: 150px;
-    background-size: cover;
-}
-
-.site-logo-default {
-    display: inline-block;
-    background-image: url(/images/lorg.svg);
+    background-image: url(/template/images/logo.svg);
     width: 630px;
     height: 110px;
     background-size: cover;
     margin-bottom: 20px;
-    margin-top: 7%;
+    /*margin-top: 7%;*/
     margin-left: 40px;
 }
 
@@ -46,25 +38,17 @@ p {
     font-size: 4em;
     font-weight: 900;
     padding-bottom: 16px;
-    padding-top: 10%;
+    /*padding-top: 10%;*/
     clear: both;
     font-weight: bolder;
 }
 
 .site-logo-search {
     display: inline-block;
-    background-image: url(/images/lorg.svg);
+    background-image: url(/template/images/logo.svg);
     margin-top: 15px;
     width: 320px;
     height: 55px;
-    background-size: cover;
-}
-
-.site-logo-search-main {
-    display: inline-block;
-    background-image: url(/images/lorg.svg);
-    width: 360px;
-    height: 60px;
     background-size: cover;
 }
 
@@ -615,9 +599,10 @@ a[title] {
         height: 60px;
     }
 
-    .site-logo-default {
+    .site-logo {
         width: 275px;
         height: 48px;
+        margin-left: 0px;
     }
 
     .site-container-title {

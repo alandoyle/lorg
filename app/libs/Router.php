@@ -126,17 +126,25 @@ class Router
      */
     private function genControllerFilename($route)
     {
-        $url = explode('/', $route);
+        $url        = explode('/', $route);
+        $controller = $url[0];
 
         /*******************************************************************************************
-         * Possibly a Custom file so save the filename.
-         *  e.g. /custom/custom.css
+         * Possibly a Template file so save the filename.
+         *  e.g. /template/css/style.css
          ******************************************************************************************/
         if (count($url) > 1) {
-            $this->params['f'] = $url[1];
-        }
+            // Remove the route element
+            unset($url[0]);
 
-        $controllerFilename = $url[0];
+            // Build the full path from theremaining URL elements
+            $filename = '';
+            foreach ($url as $path) {
+                $filename .= trim("$path/");
+            }
+            $this->params['f'] = substr_replace($filename ,"", -1);
+        }
+        $controllerFilename = $controller;
         $controllerFilename = ucwords($controllerFilename, " \t\r\n\f\v.");
         $controllerFilename = str_replace('.', '', $controllerFilename);
 

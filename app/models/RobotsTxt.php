@@ -21,7 +21,7 @@
     {
         parent::__construct($config);
         $this->defaultRobotTxt = "$this->basedir/app/default/robots.txt";
-        $this->customRobotTxt  = "$this->basedir/custom/robots.txt";
+        $this->customRobotTxt  = "$this->basedir/template/".$config['template']."/robots.txt";
     }
     public function readData()
     {
