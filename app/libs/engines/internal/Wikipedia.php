@@ -68,7 +68,8 @@ class Wikipedia {
                 // Add an ellipsis
                 $responsetext = addEllipsis($responsetext);
 
-                $response["source"]     = "https://$language.wikipedia.org/wiki/$query";
+                $response["source"]     = "https://$language.wikipedia.org/";
+                $response["source_url"] = "https://$language.wikipedia.org/wiki/$query";
                 $response["sourcename"] = "Wikipedia";
                 $response["response"]   = htmlspecialchars($responsetext);
 

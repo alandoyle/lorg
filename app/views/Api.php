@@ -17,11 +17,18 @@
 
     public function renderView()
     {
+        $redirect_url = empty($this->config['api_redirect_url']) ?
+                              $this->config['base_url'] :
+                              $this->config['api_redirect_url'];
         $data = $this->model->getData();
         switch($data['output'])
         {
         case 'html':
-            $this->renderHtml('api.tpl', $data);
+            if ($this->config['api_redirect'] === false) {
+                $this->renderHtml('api.tpl', $data);
+                return;
+            }
+            $this->RedirectToUrl($redirect_url);
             break;
         default:
             $this->renderJson($data);

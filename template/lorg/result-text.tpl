@@ -26,11 +26,14 @@
         <input type="hidden" name="p" value="0">
         <div class="sub-search-button-wrapper">
 {% foreach($categories as $category): %}
-            <a {{ $category['class'] }} href="./search?q={{ $query }}&t={{ $category['type'] }}" rel="nofollow"><img src="./images/{{ $category['typename'] }}_result.png" alt="{{ $category['description'] }} Result" title="{{ $category['description'] }} Result" />{{ $category['description'] }}</a>
+            <a {{ $category['class'] }} href="./search?q={{ $query }}&t={{ $category['type'] }}" rel="nofollow"><img src="./template/images/{{ $category['typename'] }}_result.png" alt="{{ $category['description'] }} Result" title="{{ $category['description'] }} Result" />{{ $category['description'] }}</a>
 {% endforeach; %}
         </div>
         <hr/>
     </form>
+    <div class="time-result-container">
+        <div class="text-result-wrapper"><span id="time">Fetched {{ $result_count }} result{{ ($result_count == 1) ? "" : "s" }} in {{ $end_time }} seconds ({{ $engine }}).</span></div>
+    </div>
     <div class="text-result-container">
 {% if (!empty($special['response'])): %}
         <div class="text-result-wrapper">
@@ -40,7 +43,7 @@
 {% endif; %}
                 <div class="special-alt-column">
 {% if ($special['sourcename']): %}
-                    <a href="{{ $special['source'] }}" target="_blank" rel="nofollow"><h2>{{ $special['sourcename'] }}</h2></a>
+                    <a href="{{ $special['source_url'] }}" target="_blank" rel="nofollow"><h2>{{ $special['sourcename'] }}</h2></a>
 {% endif; %}
                     <hr/><span>{{ str_replace('\n', '<br/>', $special['response']) }}</span>
                 </div>

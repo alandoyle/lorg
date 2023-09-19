@@ -34,7 +34,6 @@
         $categories = [];
         foreach ($mappings as $category)
         {
-            //echo $category;
             $category_index = array_search($category, $mappings);
             $categories[$category_index] = [
                 'class'       => ($category_index == $active) ? 'class="active" ' : '',
@@ -48,37 +47,22 @@
 
     private function getSearchResults($query, $type, $pagenum)
     {
-        $mh = curl_multi_init();
-
         $start_time = microtime(true);
 
-        $search_ch  = SearchEngine::Init($mh, $query, $type, $pagenum, $this->config);
-        $special_ch = SpecialEngine::Init($mh, $query, $type, $pagenum, $this->config);
-
-        // Download everything in the background
-        $running = null;
-        do {
-            curl_multi_exec($mh, $running);
-        } while ($running);
+        $search_engine  = new SearchEngine($this->config);
+        $search_engine->Init($query, $type, $pagenum);
+        $search_engine->RunQuery();
 
         // Only get Special results for Text searches, first page only.
-        $this->data['special'] = SpecialEngine::GetResults($special_ch, $query, $type, $pagenum, $this->config);
-
-        if ($search_ch !== null) {
-            if (curl_getinfo($search_ch)['http_code'] == '302') {
-                //@@@ TODO Try another instance
-                echo curl_multi_getcontent($search_ch);
-                die();
-            }
-        }
+        $this->data['special'] = $search_engine->GetSpecialResults();
 
         // Get search results
-        $this->data['results']      = SearchEngine::GetResults($search_ch, $query, $type, $pagenum, $this->config);
-        $this->data['searchurl']    = $this->config['search_url'];
-        $this->data['result_count'] = $this->config['result_count'];
+        $this->data['results']      = $search_engine->GetSearchResults();
+        $this->data['searchurl']    = array_key_exists('search_url', $this->config) ? $this->config['search_url'] : '';
+        $this->data['result_count'] = count($this->data['results']);
 
         // Calculate time taken
+        $this->data['engine']   = $search_engine->GetEngineName($type);
         $this->data['end_time'] = number_format(microtime(true) - $start_time, 2, '.', '');
-        $this->data['engine']   = SearchEngine::GetEngineName($type, $this->config);
     }
 }

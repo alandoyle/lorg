@@ -45,6 +45,9 @@ class Config extends BaseClass {
          * Set the defaults.
          ******************************************************************************************/
         $this->defaults = [
+            'api_redirect'             => true,
+            'api_redirect_url'         => '',
+            'contact_email'            => '',
             'google_domain'            => 'com',
             'google_language_site'     => 'en',
             'google_language_results'  => 'en',
@@ -74,7 +77,8 @@ class Config extends BaseClass {
      */
     protected function LoadConfig($basedir)
     {
-        $instances = [];
+        $ext_instances = [];
+        $api_instances = [];
 
         /*******************************************************************************************
          * Calculate the BASEDIR if not given.
@@ -94,6 +98,13 @@ class Config extends BaseClass {
         }
 
         /*******************************************************************************************
+         * Generate new local api.key if missing.
+         ******************************************************************************************/
+        if (file_exists("$basedir/config/keys/api.key") === false) {
+            file_put_contents("$basedir/config/keys/api.key", GenGUIDv4(), LOCK_EX);
+        }
+
+        /*******************************************************************************************
          * Load any existing configuration file.
          ******************************************************************************************/
         if (file_exists($basedir.'/config/config.php')) {
@@ -106,6 +117,9 @@ class Config extends BaseClass {
          * Set defaults for missing entries.
          ******************************************************************************************/
         $this->config['base_url']                 = $this->getValue('base_url',                 VALUE_STRING);
+        $this->config['api_redirect']             = $this->getValue('api_redirect',             VALUE_BOOLEAN);
+        $this->config['api_redirect_url']         = $this->getValue('api_redirect_url',         VALUE_STRING);
+        $this->config['contact_email']            = $this->getValue('contact_email',            VALUE_STRING);
         $this->config['google_domain']            = $this->getValue('google_domain',            VALUE_STRING);
         $this->config['google_language_site']     = $this->getValue('google_language_site',     VALUE_STRING);
         $this->config['google_language_results']  = $this->getValue('google_language_results',  VALUE_STRING);
@@ -126,6 +140,7 @@ class Config extends BaseClass {
         $this->config['invidious_url']            = $this->getValue('invidious_url',            VALUE_STRING);
         $this->config['ua']                       = $this->getUserAgent();
         $this->config['result_count']             = 0;
+        $this->config['enable_api_servers']       = false;
 
         /*******************************************************************************************
          * This is the physical directory where the application and configurable files (template,
@@ -139,21 +154,36 @@ class Config extends BaseClass {
          * Load any existing instances file.
          ******************************************************************************************/
         if (file_exists("$basedir/config/instances.json")) {
-            $contents  = file_get_contents("$basedir/config/instances.json");
-            $instances = json_decode($contents, true);
+            $contents      = file_get_contents("$basedir/config/instances.json");
+            $ext_instances = json_decode($contents, true);
+            foreach($ext_instances['instances'] as $instance) {
+                array_push($api_instances,
+                    array (
+                        "Name" => $instance['Name'],
+                        "URL"  => $instance['URL'],
+                        "Type" => 'Remote'
+                    )
+                );
+            }
+            $this->config['enable_api_servers'] = true;
         }
 
         /*******************************************************************************************
-         * Add local site to loaded instances
+         * Add local site to loaded instances.
+         * Override if no external instances have been added.
          ******************************************************************************************/
-        if ($this->config['include_local_instance'] === true) {
-            $instances['instances'][count($instances)] = [
-                'Name' => 'LocalSite',
-                'URL'  => $this->config['base_url'].'/api',
-                'Type' => 'Local'
-            ];
+        if (($this->config['include_local_instance'] === true) &&
+            (count($ext_instances) > 0)) {
+                array_push($api_instances,
+                    array (
+                        'Name' => 'LocalSite',
+                        'URL'  => $this->config['base_url'].'/api',
+                        'Type' => 'Local'
+                    )
+                );
+                $this->config['enable_api_servers'] = true;
         }
-        $this->getRandomApiServer($instances['instances']);
+        $this->config['api_servers'] = $api_instances;
     }
 
     /**
@@ -272,71 +302,14 @@ class Config extends BaseClass {
     private function getUserAgent()
     {
         $enabled_by_cookie = $this->getCookieValue('use_client_ua', VALUE_BOOLEAN);
-        $ua = '';
 
         if (empty(trim($this->config['use_specific_ua'])) === false) {
-            $ua = $this->config['use_specific_ua'];
-        } elseif ($this->config['use_client_ua'] === true || $enabled_by_cookie === true) {
-            $ua = $_SERVER["HTTP_USER_AGENT"];
-        } else {
-            $ua = get_random_ua();
+            return $this->config['use_specific_ua'];
+        }
+        if ($this->config['use_client_ua'] === true || $enabled_by_cookie === true) {
+            return $_SERVER["HTTP_USER_AGENT"];
         }
 
-        return $ua;
-    }
-
-    /**
-     * Return a random API URL from an array.
-     *
-     * @param array $instances
-     * @return none
-     */
-    private function getRandomApiServer($instances)
-    {
-        $count = 0;
-        $found = false;
-
-        do {
-            $instance = $instances[array_rand($instances, 1)];
-            $keyfile  =
-            $contents = '';
-
-            switch (strtolower($instance['Type']))
-            {
-                case 'local':
-                    $keyfile = 'api.key';
-                    break;
-                case 'remote':
-                    $keyfile = $instance['Name'].'.key';
-                    break;
-            }
-
-            /*******************************************************************************************
-             * Load the API Key.
-             ******************************************************************************************/
-            if (file_exists("$this->basedir/config/keys/$keyfile")) {
-                $contents  = file_get_contents("$this->basedir/config/keys/$keyfile");
-                if (strlen(trim($contents)) > 0) {
-                    $this->config['api_url'] = $instance['URL'];
-                    $this->config['api_key'] = trim($contents);
-                    $found = true;
-                }
-            }
-
-            /*******************************************************************************************
-             * Remove duff entries from the instances list.
-             ******************************************************************************************/
-            if ($found === false) {
-                for ($n = 0; $n < count($instances); $n++) {
-                    if ($instances[$n]['Name'] === $instance['Name']) {
-                        unset($instances[$n]);
-                        $instances = array_values($instances);
-                        break;
-                    }
-                }
-            }
-            $count++;
-        }
-        while(($found === false) && ($count < 5));
+        return get_random_ua();
     }
 }

@@ -17,11 +17,12 @@ class IndexController extends Controller {
     {
         parent::execute($params);
 
-        //@@@ TODO - Implement ErrorController???
         /*******************************************************************************************
-         * Index Controller only displays at the base_url
+         * Index Controller only displays at the base_url.
+         * Redirect if no query string or if a route is specified (Index should not have a route).
          ******************************************************************************************/
-        if (empty($params['q']) !== true) {
+        if ((empty($params['q']) !== true) ||
+            (!empty($params['r']))) {
             $this->RedirectToURL($this->config['base_url']);
         }
 

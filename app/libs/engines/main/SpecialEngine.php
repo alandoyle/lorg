@@ -47,8 +47,7 @@
 
     static function GetResults($special_ch, $query, $type, $pagenum, $config)
     {
-        $specialType = self::checkQuery($query, $type, $pagenum);
-        switch ($specialType)
+        switch (self::checkQuery($query, $type, $pagenum))
         {
             case self::SPECIAL_CURRENCY:    return Currency::getResults($special_ch, $query);
             case self::SPECIAL_DEFINITION:  return Definition::getResults($special_ch);

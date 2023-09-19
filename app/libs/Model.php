@@ -37,18 +37,19 @@ class Model extends BaseClass {
         }
 
         $this->data = [
-            'githash'      => $githash,
-            'giturl'       => $giturl,
-            'baseurl'      => $this->config['base_url'],
-            'apiurl'       => $this->config['api_url'],
-            'searchurl'    => '',
-            'title'        => $this->config['opensearch_title'],
-            'description'  => $this->config['opensearch_description'],
-            'encoding'     => $this->config['opensearch_encoding'],
-            'longname'     => $this->config['opensearch_long_name'],
-            'template'     => $this->config['template'],
-            'ua'           => $this->config['ua'],
-            'result_count' => 0,
+            'githash'       => $githash,
+            'giturl'        => $giturl,
+            'baseurl'       => $this->config['base_url'],
+            'apiurl'        => array_key_exists('api_url', $this->config) ? $this->config['api_url'] : '',
+            'searchurl'     => '',
+            'title'         => $this->config['opensearch_title'],
+            'description'   => $this->config['opensearch_description'],
+            'encoding'      => $this->config['opensearch_encoding'],
+            'longname'      => $this->config['opensearch_long_name'],
+            'template'      => $this->config['template'],
+            'ua'            => $this->config['ua'],
+            'contact_email' => $this->config['contact_email'],
+            'result_count'  => 0,
         ];
 
         // Set parameter defaults
@@ -66,7 +67,7 @@ class Model extends BaseClass {
 
         // Setup default
         $this->data['categories'] = [];
-        $this->data['specials']   = [];
+        $this->data['special']    = [];
         $this->data['results']    = [];
     }
 }

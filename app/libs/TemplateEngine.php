@@ -114,6 +114,7 @@
 		<meta name="api_url" content="{{ $apiurl }}"/>
 		<meta name="template" content="{{ $template }}"/>
 		<meta name="result_count" content="{{ $result_count }}"/>
+		<meta name="contact_email" content="{{ $contact_email }}"/>
 		<meta name="generated" content="'. date(DATE_RFC2822) .'"/>
 		<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 		<meta http-equiv="Pragma" content="no-cache"/>

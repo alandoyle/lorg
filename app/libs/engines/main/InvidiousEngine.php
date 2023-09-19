@@ -36,12 +36,6 @@
 
     static function getResults($search_ch, $query, $type, &$config)
     {
-        if (curl_getinfo($search_ch)['http_code'] == '302') {
-            //@@@ TODO Try another instance
-            echo curl_multi_getcontent($search_ch);
-            //die();
-        }
-
         $results       = [];
         $webresponse   = curl_multi_getcontent($search_ch);
         $json_response = json_decode($webresponse, true);

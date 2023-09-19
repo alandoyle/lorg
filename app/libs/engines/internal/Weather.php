@@ -35,7 +35,7 @@ class Weather {
             }
 
             // Build the URL and download the data from Wttr.in.
-            $webresponse   = curl_multi_getcontent($special_ch);
+            $webresponse = curl_multi_getcontent($special_ch);
 
             // Check if we've got some data.
             if (empty($webresponse)) {
@@ -51,6 +51,8 @@ class Weather {
             $current_weather    = $json_response["current_condition"][0];
             $temp_c             = $current_weather["temp_C"];
             $temp_f             = $current_weather["temp_F"];
+            $feels_like_c       = $current_weather["FeelsLikeC"];
+            $feels_like_f       = $current_weather["FeelsLikeF"];
             $description        = $current_weather["weatherDesc"][0]["value"];
             $formatted_response = "$description - $temp_c °C | $temp_f °F";
 
@@ -62,6 +64,7 @@ class Weather {
 
             $response["response"]   = htmlspecialchars($formatted_response);
             $response["source"]     = "https://wttr.in";
+            $response["source_url"] = self:: getUrl();
             $response["sourcename"] = $formatted_sourcename;
         }
         catch(Exception $e) {}

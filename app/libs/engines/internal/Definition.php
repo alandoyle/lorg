@@ -54,6 +54,7 @@ class Definition {
                 // Read the details from the JSON response.
                 $response["response"]   = htmlspecialchars($json_response[0]["meanings"][0]["definitions"][0]["definition"]);
                 $response["source"]     = "https://dictionaryapi.dev";
+                $response["source_url"] = htmlspecialchars($json_response[0]["sourceUrls"][0]);
                 $response["sourcename"] = ucfirst($json_response[0]["word"]);
             }
         }

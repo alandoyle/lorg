@@ -33,25 +33,19 @@
         $type    = $this->data['type'];
         $pagenum = $this->data['pagenum'];
 
-        $mh = curl_multi_init();
-
-        $search_ch  = SearchEngine::Init($mh, $query, $type, $pagenum, $this->config);
-
-        // Download everything in the background
-        $running = null;
-        do {
-            curl_multi_exec($mh, $running);
-        } while ($running);
+        $search_engine  = new SearchEngine($this->config);
+        $search_engine->Init($query, $type, $pagenum);
+        $search_engine->RunQuery();
 
         // Get search results
-        $results = SearchEngine::GetResults($search_ch, $query, $type, $pagenum, $this->config);
+        $results = $search_engine->GetSearchResults();
 
         // Get JSON results.
         $filedata = json_encode($results, JSON_PRETTY_PRINT);
 
         // Query failed so we send a JSON error
         if (empty($results)) {
-            $error = [ 'success' => 1, 'message' => 'ERROR: Unable to produce JSON search results.'];
+            $error    = [ 'success' => 1, 'message' => 'ERROR: Unable to produce JSON search results.'];
             $filedata = json_encode($error);
         }
 

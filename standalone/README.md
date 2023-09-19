@@ -9,10 +9,18 @@ A sample Nginx site configuration file can be found in *standalone/lorg.nginx.co
 
 > git clone https://github.com/alandoyle/lorg /var/www/lorg
 
-### Install the default files.
+### Install the default configuration.
 
 > sudo cp /var/www/lorg/docker/config.php /var/www/lorg/config
-> sudo cp /var/www/lorg/docker/custom.css /var/www/lorg/custom
+
+> sudo chown -R www-data:www-data /var/www/lorg/config
+
+### Add extra instances (optional)
+
+> sudo cp /var/www/lorg/docker/instances.json.example /var/www/lorg/config/instance.json
+
+Edit this file to point to instances for which you have an API key.
+NOTE: The local instance is automatically added to the instance list unless disabled in `config.php`
 
 ### Configure nginx
 
@@ -26,4 +34,4 @@ A sample Nginx site configuration file can be found in *standalone/lorg.nginx.co
 
 > sudo systemctl restart nginx
 
-**lorg** is now running on port 80. Ideally it should be run over HTTPS either directly from this instance of *nginx* or via Nginx Proxy Mnager/HAProxy/Traefik/etc. This is beyond the scope of this instruction set and well documented elsewhere on the web.
+**lorg** is now running on port 80. Ideally it should be run over HTTPS either directly from this instance of *nginx* or via Nginx Proxy Manager/HAProxy/Traefik/etc. This is beyond the scope of this instruction set and is well documented elsewhere on the web.

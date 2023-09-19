@@ -57,15 +57,4 @@ class Controller extends Config {
          //Instantiate View
         return new $viewClassName($model);
     }
-
-    protected function RedirectToURL($url, $response_code = 302)
-    {
-        if (!headers_sent()) {
-            foreach (headers_list() as $header)
-                header_remove($header);
-        }
-
-        header("Location: $url", true, $response_code);
-        die();
-    }
 }
