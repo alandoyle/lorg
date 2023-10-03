@@ -55,6 +55,12 @@ class Wikipedia {
             $first_page = array_values($json_response["query"]["pages"])[0];
             if (!array_key_exists("missing", $first_page)) {
                 $ncount = 0;
+
+                // Check we have data inside the response
+                if (!array_key_exists("extract", $first_page)) {
+                    return $response;
+                }
+
                 // Read the details from the JSON response.
                 $description  = explode("\n", $first_page["extract"]);
                 $responsetext = '';

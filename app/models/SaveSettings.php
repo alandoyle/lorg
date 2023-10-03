@@ -7,18 +7,27 @@
  *
  ***************************************************************************************************
  *
- * This is the template `files` View.
+ * This is the SaveSettings Model.
  *
  ***************************************************************************************************
  */
-class TemplateView extends View {
-    public function __construct($model)
+
+ class SaveSettingsModel extends Model {
+
+    public function __construct($config)
     {
-        parent::__construct($model);
+        parent::__construct($config);
     }
 
-    public function renderView()
+    public function readData($params)
     {
-        $this->renderFileData($this->model->getData());
+        $this->getBaseData();
+
+        foreach ($_REQUEST as $key => $value) {
+            if ($key == 'm' || $key == 'r') {
+                continue;
+            }
+            setcookie($key, $value);
+        }
     }
 }

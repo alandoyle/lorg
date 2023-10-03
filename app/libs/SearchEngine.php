@@ -16,7 +16,7 @@
 
     // Configuration
     private $config;
-    private $enable_api_servers = false;
+    private $api_disabled = false;
 
     // Handles
     private $search_ch = NULL;
@@ -34,9 +34,9 @@
 
     public function __construct(&$config)
     {
-        $this->enable_api_servers = $config['enable_api_servers'];
-        $this->config             = $config;
-        $this->mh                 = curl_multi_init();
+        $this->api_disabled = $config['api_disabled'];
+        $this->config       = $config;
+        $this->mh           = curl_multi_init();
     }
 
     public function Init($query, $type, $pagenum)
@@ -46,7 +46,7 @@
         $this->pagenum = $pagenum;
 
         // Check if we're using API servers.
-        if ($this->enable_api_servers) {
+        if ($this->api_disabled == false) {
             debug_var("API: $type");
             $this->search_ch = ApiEngine::init($this->mh, $query, $type, $pagenum, $this->config);
             return;
@@ -84,8 +84,9 @@
             $http_status = curl_getinfo($this->search_ch, CURLINFO_RESPONSE_CODE);
 
             // If we haven't got any API servers then we need to succeed even if we fail :(
-            if (($this->enable_api_servers === false) &&
-                ($http_status != '302')) {
+            if (($this->api_disabled) &&
+                ($http_status == '302')) {
+                debug_var("FAILING [$http_status]");
                 $http_status = '200';
             }
 
@@ -99,7 +100,6 @@
                 // Occasionally we get 0 responses from Google so we retry.
                 if (count($this->search_results) == 0) {
                     $http_status = '503';
-                    debug_var("RETRYING");
                 }
             }
         }
@@ -130,7 +130,7 @@
     private function getResults($search_ch, $query, $type, $pagenum, &$config)
     {
         // Check if we're using API servers.
-        if ($this->enable_api_servers) {
+        if ($this->api_disabled == false) {
             debug_var("API: $type");
             $this->search_ch = ApiEngine::init($this->mh, $query, $type, $pagenum, $this->config);
             return;

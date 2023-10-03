@@ -7,11 +7,12 @@
  *
  ***************************************************************************************************
  *
- * This is the template `files` View.
+ * This is the SaveSettings View.
  *
  ***************************************************************************************************
  */
-class TemplateView extends View {
+
+class SaveSettingsView extends View {
     public function __construct($model)
     {
         parent::__construct($model);
@@ -19,6 +20,6 @@ class TemplateView extends View {
 
     public function renderView()
     {
-        $this->renderFileData($this->model->getData());
+        $this->RedirectToURL($this->config['base_url']);
     }
 }

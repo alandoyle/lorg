@@ -10,12 +10,6 @@
         <br/>
         <p>The results are going to be in JSON format.</p>
         <br/>
-{% if (empty($contact_email)): %}
-        <h3>This is a Private instance.</h3>
-{% endif; %}
-{% if (!empty($contact_email)): %}
-        <h3>Please request the API key from the link below.</h3>
-{% endif; %}
     </div>
 {% include footer.tpl %}
 {% endblock %}

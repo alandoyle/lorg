@@ -45,27 +45,29 @@ class Config extends BaseClass {
          * Set the defaults.
          ******************************************************************************************/
         $this->defaults = [
+            'accept_langauge'          => 'en-US',
             'api_redirect'             => true,
             'api_redirect_url'         => '',
-            'contact_email'            => '',
+            'api_only_forced'          => false,
+            'api_disabled'             => false,
             'google_domain'            => 'com',
             'google_language_site'     => 'en',
             'google_language_results'  => 'en',
             'google_number_of_results' => 20,
+            'hide_templates'           => false,
+            'include_local_instance'   => true,
+            'link_google_image'        => false,
+            'invidious_url'            => 'https://y.com.sb',
+            'minify_output'            => true,
             'opensearch_title'         => 'lorg',
             'opensearch_description'   => 'lorg is a metasearch engine that respects your privacy.',
             'opensearch_encoding'      => 'UTF-8',
             'opensearch_long_name'     => 'lorg Metasearch Engine',
-            'accept_langauge'          => 'en-US',
             'template'                 => 'lorg',
             'use_client_ua'            => false,
-            'use_specific_ua'          => '',
-            'link_google_image'        => false,
             'use_image_proxy'          => true,
-            'minify_output'            => true,
-            'include_local_instance'   => true,
+            'use_specific_ua'          => '',
             'wikipedia_language'       => 'en',
-            'invidious_url'            => 'https://y.com.sb',
         ];
     }
 
@@ -116,31 +118,32 @@ class Config extends BaseClass {
         /*******************************************************************************************
          * Set defaults for missing entries.
          ******************************************************************************************/
-        $this->config['base_url']                 = $this->getValue('base_url',                 VALUE_STRING);
-        $this->config['api_redirect']             = $this->getValue('api_redirect',             VALUE_BOOLEAN);
-        $this->config['api_redirect_url']         = $this->getValue('api_redirect_url',         VALUE_STRING);
-        $this->config['contact_email']            = $this->getValue('contact_email',            VALUE_STRING);
-        $this->config['google_domain']            = $this->getValue('google_domain',            VALUE_STRING);
-        $this->config['google_language_site']     = $this->getValue('google_language_site',     VALUE_STRING);
-        $this->config['google_language_results']  = $this->getValue('google_language_results',  VALUE_STRING);
-        $this->config['google_number_of_results'] = $this->getValue('google_number_of_results', VALUE_NUMERIC);
-        $this->config['opensearch_title']         = $this->getValue('opensearch_title',         VALUE_STRING);
-        $this->config['opensearch_description']   = $this->getValue('opensearch_description',   VALUE_STRING);
-        $this->config['opensearch_encoding']      = $this->getValue('opensearch_encoding',      VALUE_STRING);
-        $this->config['opensearch_long_name']     = $this->getValue('opensearch_long_name',     VALUE_STRING);
-        $this->config['accept_langauge']          = $this->getValue('accept_langauge',          VALUE_STRING);
-        $this->config['template']                 = $this->getValue('template',                 VALUE_STRING);
-        $this->config['use_client_ua']            = $this->getValue('use_client_ua',            VALUE_BOOLEAN);
-        $this->config['use_specific_ua']          = $this->getValue('use_specific_ua',          VALUE_STRING);
-        $this->config['link_google_image']        = $this->getValue('link_google_image',        VALUE_BOOLEAN);
-        $this->config['use_image_proxy']          = $this->getValue('use_image_proxy',          VALUE_BOOLEAN);
-        $this->config['minify_output']            = $this->getValue('minify_output',            VALUE_BOOLEAN);
-        $this->config['include_local_instance']   = $this->getValue('include_local_instance',   VALUE_BOOLEAN);
-        $this->config['wikipedia_language']       = $this->getValue('wikipedia_language',       VALUE_STRING);
-        $this->config['invidious_url']            = $this->getValue('invidious_url',            VALUE_STRING);
+        $this->config['base_url']                 = $this->getValue('base_url',                       VALUE_STRING);
+        $this->config['api_redirect']             = $this->getValue('api_redirect',                   VALUE_BOOLEAN);
+        $this->config['api_redirect_url']         = $this->getValue('api_redirect_url',               VALUE_STRING);
+        $this->config['api_only_forced']          = $this->getValue('api_only_forced',                VALUE_BOOLEAN);
+        $this->config['api_disabled']             = $this->getValue('api_disabled',                   VALUE_BOOLEAN);
+        $this->config['google_domain']            = $this->getValue('google_domain',                  VALUE_STRING);
+        $this->config['google_language_site']     = $this->getCookieValue('google_language_site',     VALUE_STRING);
+        $this->config['google_language_results']  = $this->getCookieValue('google_language_results',  VALUE_STRING);
+        $this->config['google_number_of_results'] = $this->getCookieValue('google_number_of_results', VALUE_NUMERIC);
+        $this->config['hide_templates']           = $this->getValue('hide_templates',                 VALUE_BOOLEAN);
+        $this->config['opensearch_title']         = $this->getValue('opensearch_title',               VALUE_STRING);
+        $this->config['opensearch_description']   = $this->getValue('opensearch_description',         VALUE_STRING);
+        $this->config['opensearch_encoding']      = $this->getValue('opensearch_encoding',            VALUE_STRING);
+        $this->config['opensearch_long_name']     = $this->getValue('opensearch_long_name',           VALUE_STRING);
+        $this->config['accept_langauge']          = $this->getValue('accept_langauge',                VALUE_STRING);
+        $this->config['template']                 = $this->getCookieValue('template',                 VALUE_STRING);
+        $this->config['use_client_ua']            = $this->getValue('use_client_ua',                  VALUE_BOOLEAN);
+        $this->config['use_specific_ua']          = $this->getValue('use_specific_ua',                VALUE_STRING);
+        $this->config['link_google_image']        = $this->getValue('link_google_image',              VALUE_BOOLEAN);
+        $this->config['use_image_proxy']          = $this->getValue('use_image_proxy',                VALUE_BOOLEAN);
+        $this->config['minify_output']            = $this->getValue('minify_output',                  VALUE_BOOLEAN);
+        $this->config['include_local_instance']   = $this->getValue('include_local_instance',         VALUE_BOOLEAN);
+        $this->config['wikipedia_language']       = $this->getValue('wikipedia_language',             VALUE_STRING);
+        $this->config['invidious_url']            = $this->getCookieValue('invidious_url',            VALUE_STRING);
         $this->config['ua']                       = $this->getUserAgent();
         $this->config['result_count']             = 0;
-        $this->config['enable_api_servers']       = false;
 
         /*******************************************************************************************
          * This is the physical directory where the application and configurable files (template,
@@ -165,7 +168,6 @@ class Config extends BaseClass {
                     )
                 );
             }
-            $this->config['enable_api_servers'] = true;
         }
 
         /*******************************************************************************************
@@ -181,9 +183,15 @@ class Config extends BaseClass {
                         'Type' => 'Local'
                     )
                 );
-                $this->config['enable_api_servers'] = true;
         }
         $this->config['api_servers'] = $api_instances;
+
+        /*******************************************************************************************
+         * Check if we have any API servers
+         ******************************************************************************************/
+        if (count($this->config['api_servers']) == 0) {
+            $this->config['api_disabled'] = true;
+        }
     }
 
     /**
@@ -301,12 +309,10 @@ class Config extends BaseClass {
      */
     private function getUserAgent()
     {
-        $enabled_by_cookie = $this->getCookieValue('use_client_ua', VALUE_BOOLEAN);
-
         if (empty(trim($this->config['use_specific_ua'])) === false) {
             return $this->config['use_specific_ua'];
         }
-        if ($this->config['use_client_ua'] === true || $enabled_by_cookie === true) {
+        if ($this->config['use_client_ua'] === true) {
             return $_SERVER["HTTP_USER_AGENT"];
         }
 

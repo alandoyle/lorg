@@ -208,8 +208,8 @@ input[type='search'] {
 }
 
 .search-button-wrapper button,
-.misc-container button,
-.misc-container select {
+.settings-container button,
+.settings-container select {
     color: inherit;
     background-color: var(--button-bg);
     font-size: 14px;
@@ -328,7 +328,7 @@ input[type='search'] {
 }
 
 .search-button-wrapper button:hover,
-.misc-container button:hover {
+.settings-container button:hover {
     border: 1px solid #5f6368;
     cursor: pointer;
 }
@@ -353,32 +353,30 @@ input[type='search'] {
     width: 20px;
 }
 
-.misc-container {
+.settings-container {
     text-align: center;
     word-wrap: break-word;
     width: 450px;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 100px;
 }
 
-.misc-container div {
+.settings-container div {
     margin-bottom: 30px;
 }
 
-.misc-container button {
+.settings-container button {
     margin-right: 10px;
     margin-left: 10px;
 }
 
-.misc-container a {
+.settings-container a {
     color: inherit;
     text-decoration: underline;
 }
 
 .settings-textbox-container div {
     text-align: left;
-    margin-bottom: 25px;
 }
 
 .settings-textbox-container input {
@@ -649,11 +647,11 @@ a[title] {
 }
 
 .popup {
-    margin: 170px auto;
+    margin: 20px auto;
     padding: 20px;
     background: #fff;
     border-radius: 5px;
-    width: 30%;
+    max-width: 960px;
     position: relative;
     transition: all 3s ease-in-out;
 }
@@ -680,7 +678,7 @@ a[title] {
 }
 
 .popup .content {
-    max-height: 30%;
+    max-height: 65%;
     overflow: auto;
 }
 
@@ -763,8 +761,7 @@ a[title] {
         margin: 10px;
     }
 
-    .misc-container {
-        margin-bottom: 200px;
+    .settings-container {
         width: 95%;
     }
 

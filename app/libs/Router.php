@@ -149,8 +149,9 @@ class Router
             $this->params['f'] = substr_replace($filename ,"", -1);
         }
         $controllerFilename = $controller;
-        $controllerFilename = ucwords($controllerFilename, " \t\r\n\f\v.");
+        $controllerFilename = ucwords($controllerFilename, " \t\r\n\f\v.-");
         $controllerFilename = str_replace('.', '', $controllerFilename);
+        $controllerFilename = str_replace('-', '', $controllerFilename);
 
         return $controllerFilename;
     }

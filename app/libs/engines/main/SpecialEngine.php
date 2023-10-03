@@ -61,15 +61,7 @@
 
     static function checkQuery($query, $type, $pagenum)
     {
-        $query_type = self::SPECIAL_NOTHING;
-
-        // Check if we're a text search on page one.
-        // Also check if Special results are disabled in the local settings.
-        if (($type != SEARCH_TEXT) || ($pagenum != 0) ||
-            isset($_COOKIE["disable_special"])) {
-            return $query_type;
-        }
-
+        $query_type  = self::SPECIAL_NOTHING;
         $query_lower = strtolower($query);
         $split_query = explode(" ", $query);
 

@@ -51,7 +51,7 @@
 
         // Check if "Safe Search" has been enabled in the settings.
         if (isset($_COOKIE['safe_search'])) {
-            $url .= '&safe='.$_COOKIE['safe_search'];
+            $url .= '&safe=medium';
         }
 
         // Save the URL
