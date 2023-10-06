@@ -18,8 +18,8 @@
         parent::__construct($config);
     }
 
-    public function readData()
+    public function readData($params = [])
     {
-        $this->getBaseData();
+        parent::readData($params);
     }
 }

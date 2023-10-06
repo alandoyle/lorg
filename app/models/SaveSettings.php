@@ -19,9 +19,9 @@
         parent::__construct($config);
     }
 
-    public function readData($params)
+    public function readData($params = [])
     {
-        $this->getBaseData();
+        parent::readData($params);
 
         foreach ($_REQUEST as $key => $value) {
             if ($key == 'm' || $key == 'r') {

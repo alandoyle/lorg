@@ -20,9 +20,9 @@
         parent::__construct($config);
     }
 
-    public function readData($params)
+    public function readData($params = [])
     {
-        $this->getBaseData($params);
+        parent::readData($params);
         $this->getCategories($this->data['type']);
         $this->getSearchResults($this->data['query'], $this->data['type'], $this->data['pagenum']);
     }

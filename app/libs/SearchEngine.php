@@ -71,8 +71,7 @@
         $count = 0;
 
         // Loop up to 10 times (prevent infinite loops) to get the results.
-        while (($http_status != '200') &&
-               ($count < 10)) {
+        while (($http_status != '200') && ($count < 10)) {
             $count++;
 
             // Download everything in the background
@@ -83,11 +82,11 @@
 
             $http_status = curl_getinfo($this->search_ch, CURLINFO_RESPONSE_CODE);
 
-            // If we haven't got any API servers then we need to succeed even if we fail :(
+            // Check if we're Rate-Limited
             if (($this->api_disabled) &&
                 ($http_status == '302')) {
-                debug_var("FAILING [$http_status]");
-                $http_status = '200';
+                sleep (1);
+                continue;
             }
 
             if ($http_status == '200') {
@@ -103,13 +102,33 @@
                 }
             }
         }
+
+        // Generate a FAKE search response which includes a link to click.
+        if ($http_status != '200') {
+            // Build the URL
+            $url = $this->config['base_url'].'/search?q=';
+            if (array_key_exists($_REQUEST, 'q')) { $url .= urlencode($_REQUEST['q']); }
+            if (array_key_exists($_REQUEST, 't')) { $url .= '&t='.$_REQUEST['t']; }
+            if (array_key_exists($_REQUEST, 'p')) { $url .= '&p='.$_REQUEST['p']; }
+
+            array_push($this->search_results,
+                    array (
+                        "title"       => "Instance Rate-Limited",
+                        "sitename"    => $this->config['opensearch_title'],
+                        "image"       => get_blank_image(),
+                        "url"         => $url,
+                        "base_url"    => $this->config['base_url'],
+                        "description" => "Instance Rate-Limited. Please 'Refresh' to try again in  a few seconds."
+                    )
+                );
+        }
     }
 
     public function GetEngineName($type)
     {
         switch($type)
         {
-            case SEARCH_TEXT: // Text Search
+            case SEARCH_TEXT:  // Text Search
             case SEARCH_IMAGE: // Image Search
                 return GoogleEngine::getEngineName();
             case SEARCH_VIDEO: // Video Search

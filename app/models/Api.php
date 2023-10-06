@@ -18,9 +18,9 @@
         parent::__construct($config);
     }
 
-    public function readData($params)
+    public function readData($params = [])
     {
-        $this->getBaseData($params);
+        parent::readData($params);
         $this->data['output'] = 'json';
 
         if (empty($this->data['query'])) {

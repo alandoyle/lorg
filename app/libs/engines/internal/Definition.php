@@ -52,7 +52,22 @@ class Definition {
 
             if (!array_key_exists("title", $json_response)) {
                 // Read the details from the JSON response.
-                $response["response"]   = htmlspecialchars($json_response[0]["meanings"][0]["definitions"][0]["definition"]);
+                $definition = '';
+                foreach($json_response[0]["meanings"] as $meaning) {
+                    $definition .= '<div><strong>'.ucfirst($meaning['partOfSpeech']).'</strong><ul>';
+                    foreach($meaning['definitions'] as $item) {
+                        $definition_item = '<li>'.$item['definition'].'</li>';
+                        $definition .= $definition_item;
+                    }
+                    $definition .= '<ul></div>';
+                }
+
+                // Check if we got anything useful.
+                if (empty($definition)) {
+                    $definition = htmlspecialchars($json_response[0]["meanings"][0]["definitions"][0]["definition"]);
+                }
+
+                $response["response"]   = $definition;
                 $response["source"]     = "https://dictionaryapi.dev";
                 $response["source_url"] = htmlspecialchars($json_response[0]["sourceUrls"][0]);
                 $response["sourcename"] = ucfirst($json_response[0]["word"]);

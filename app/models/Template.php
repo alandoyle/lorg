@@ -25,7 +25,7 @@ class TemplateModel extends Model {
         parent::__construct($config);
     }
 
-    public function readData($params)
+    public function readData($params = [])
     {
         $filename     = array_key_exists('f', $params) ? $params['f'] : 'UNKNOWN';
         $template     = $this->config['template'];

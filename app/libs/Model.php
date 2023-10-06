@@ -22,6 +22,11 @@ class Model extends BaseClass {
         $this->basedir = $config['basedir'];
     }
 
+    public function readData($params = [])
+    {
+        $this->getBaseData($params);
+    }
+
     public function getData()
     {
         return $this->data;

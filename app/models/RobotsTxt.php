@@ -23,7 +23,7 @@
         $this->defaultRobotTxt = "$this->basedir/app/default/robots.txt";
         $this->customRobotTxt  = "$this->basedir/template/".$config['template']."/robots.txt";
     }
-    public function readData()
+    public function readData($params = [])
     {
         if (file_exists($this->customRobotTxt)) {
             $this->data['text'] = file_get_contents($this->customRobotTxt);
