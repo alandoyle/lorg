@@ -3,7 +3,7 @@ FROM ubuntu:jammy
 
 ARG DEBIAN_FRONTEND="noninteractive"
 
-ENV SCRIPT_ROOT=/var/www
+ENV SCRIPT_ROOT=/var/www/lorg
 
 VOLUME ${SCRIPT_ROOT}/lorg/config
 VOLUME ${SCRIPT_ROOT}/lorg/template
@@ -12,22 +12,17 @@ VOLUME /var/www/lorg/config
 VOLUME /var/www/lorg/template
 
 # Install software
-RUN apt-get -qq update -y && apt-get -qq upgrade -y && apt-get -qq install git curl sudo -y
-RUN apt-get -qq install nginx-core php php-fpm php-common tzdata upervisor -y
+RUN apt-get -qq update -y && apt-get -qq upgrade -y && apt-get -qq install git sudo -y
+RUN apt-get -qq install nginx-core php php-fpm php-common php-curl php-dom tzdata supervisor -y
 RUN rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
 RUN sed -i -e 's/;\(clear_env\) = .*/\1 = no/i' \
 		-e 's/^\(user\|group\) = .*/\1 = app/i' \
 		-e 's/;\(php_admin_value\[error_log\]\) = .*/\1 = \/tmp\/error.log/' \
 		-e 's/;\(php_admin_flag\[log_errors\]\) = .*/\1 = on/' \
         /etc/php/8.1/fpm/pool.d/www.conf
-RUN mkdir -p /etc/nginx/global /var/www
+RUN mkdir -p ${SCRIPT_ROOT}/config /etc/nginx/global /var/www
 
 # Configure Image
-#COPY docker/config.docker.php ${SCRIPT_ROOT}
-#COPY app/update-feeds.sh ${SCRIPT_ROOT}
-#RUN chmod 755 ${SCRIPT_ROOT}/update-feeds.sh
-
-COPY docker/php.conf /etc/nginx/global
 COPY docker/restrictions.conf /etc/nginx/global
 COPY standalone/lorg.nginx.conf /etc/nginx/sites-enabled/default
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf

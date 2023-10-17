@@ -19,7 +19,7 @@ if [ ! -d $DST_DIR/.git ]; then
 	chown $OWNER_UID:$OWNER_GID $DST_DIR
 
 	echo cloning lorg source from $SRC_REPO to $DST_DIR...
-	sudo -u app git clone --depth 1 $SRC_REPO $DST_DIR || echo error: failed to clone master repository.
+	sudo -u app git clone $SRC_REPO $DST_DIR || echo error: failed to clone master repository.
 else
 	echo updating lorg source in $DST_DIR from $SRC_REPO...
 
@@ -33,17 +33,15 @@ fi
 update-ca-certificates || true
 
 if [ ! -e $DST_DIR/public/index.php ]; then
-	echo "error: lorg index.php missing (git clone failed?), unable to continue."
+	echo "error: lorg index.php missing (git clone failed?) [$DST_DIR], unable to continue."
+	ls -l $DST_DIR
 	exit 1
 fi
 
-cp ${SCRIPT_ROOT}/config.docker.php $DST_DIR/config.php
-chmod 644 $DST_DIR/config.php
-
-for d in cache lock feed-icons; do
-	chmod 777 $DST_DIR/$d
-	find $DST_DIR/$d -type f -exec chmod 666 {} \;
-done
+if [ ! -f ${DST_DIR}/config/config.php ] ; then
+    cp ${DST_DIR}/docker/config.php ${DST_DIR}/config/config.php
+fi
+chmod 644 $DST_DIR/config/config.php
 
 # Configure PHP
 echo "Setting PHP memory_limit to ${PHP_WORKER_MEMORY_LIMIT}"
@@ -58,11 +56,12 @@ rm -f /tmp/error.log && mkfifo /tmp/error.log && chown app:app /tmp/error.log
 
 (tail -q -f /tmp/error.log >> /proc/1/fd/2) &
 
-# cleanup any old lockfiles
-rm -vf -- /var/www/lorg/lock/*.lock
+if [ -d ${DST_DIR}/template.original ] ; then
+    cp -Rf ${DST_DIR}/template.original/* ${DST_DIR}/template
+fi
 
 touch $DST_DIR/.app_is_ready
 
 # Run it all :)
-echo "Starting daemons for $TTRSS_SELF_URL_PATH"
+echo "Starting daemons..."
 /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
