@@ -11,6 +11,8 @@ A sample Nginx site configuration file can be found in *standalone/lorg.nginx.co
 
 ### Install the default configuration.
 
+> sudo mkdir -p  /var/www/lorg/config
+
 > sudo cp /var/www/lorg/docker/config.php /var/www/lorg/config
 
 > sudo chown -R www-data:www-data /var/www/lorg/config
