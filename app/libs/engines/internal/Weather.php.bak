@@ -63,6 +63,7 @@ class Weather {
 
 
             $response["response"]   = str_replace("\n", "<br/>", htmlspecialchars($formatted_response));
+            //@@@$response["response"]   = htmlspecialchars($formatted_response);
             $response["source"]     = "https://wttr.in";
             $response["source_url"] = self:: getUrl();
             $response["sourcename"] = $formatted_sourcename;
