@@ -107,9 +107,11 @@
         if ($http_status != '200') {
             // Build the URL
             $url = $this->config['base_url'].'/search?q=';
-            if (array_key_exists($_REQUEST, 'q')) { $url .= urlencode($_REQUEST['q']); }
-            if (array_key_exists($_REQUEST, 't')) { $url .= '&t='.$_REQUEST['t']; }
-            if (array_key_exists($_REQUEST, 'p')) { $url .= '&p='.$_REQUEST['p']; }
+            if (is_array($_REQUEST)) {
+                if (array_key_exists($_REQUEST, 'q')) { $url .= urlencode($_REQUEST['q']); }
+                if (array_key_exists($_REQUEST, 't')) { $url .= '&t='.$_REQUEST['t']; }
+                if (array_key_exists($_REQUEST, 'p')) { $url .= '&p='.$_REQUEST['p']; }
+            }
 
             array_push($this->search_results,
                     array (
