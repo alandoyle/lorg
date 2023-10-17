@@ -5,11 +5,8 @@ ARG DEBIAN_FRONTEND="noninteractive"
 
 ENV SCRIPT_ROOT=/var/www/lorg
 
-VOLUME ${SCRIPT_ROOT}/lorg/config
-VOLUME ${SCRIPT_ROOT}/lorg/template
-
-VOLUME /var/www/lorg/config
-VOLUME /var/www/lorg/template
+VOLUME ${SCRIPT_ROOT}/config
+VOLUME ${SCRIPT_ROOT}/template
 
 # Install software
 RUN apt-get -qq update -y && apt-get -qq upgrade -y && apt-get -qq install git sudo -y
@@ -20,7 +17,7 @@ RUN sed -i -e 's/;\(clear_env\) = .*/\1 = no/i' \
 		-e 's/;\(php_admin_value\[error_log\]\) = .*/\1 = \/tmp\/error.log/' \
 		-e 's/;\(php_admin_flag\[log_errors\]\) = .*/\1 = on/' \
         /etc/php/8.1/fpm/pool.d/www.conf
-RUN mkdir -p ${SCRIPT_ROOT}/config /etc/nginx/global /var/www
+RUN mkdir -p /etc/nginx/global /var/www
 
 # Configure Image
 COPY docker/restrictions.conf /etc/nginx/global

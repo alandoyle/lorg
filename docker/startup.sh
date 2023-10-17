@@ -20,15 +20,14 @@ if [ ! -d $GIT_DIR/.git ]; then
 	chown -R $OWNER_UID:$OWNER_GID $DST_DIR
 
 	echo cloning lorg source from $SRC_REPO to $GIT_DIR...
-	sudo -u app git clone $SRC_REPO $GIT_DIR || echo error: failed to clone repository.
+	git clone $SRC_REPO $GIT_DIR || echo error: failed to clone repository.
 else
 	echo updating lorg source in $GIT_DIR from $SRC_REPO...
 
-	chown -R $OWNER_UID:$OWNER_GID $GIT_DIR
 	cd $GIT_DIR && \
-		sudo -u app git config core.filemode false && \
-		sudo -u app git config pull.rebase false && \
-		sudo -u app git pull || echo error: unable to update repository.
+		git config core.filemode false && \
+		git config pull.rebase false && \
+		git pull || echo error: unable to update repository.
 fi
 
 chmod a+x $GIT_DIR/docker/mklinks.sh
