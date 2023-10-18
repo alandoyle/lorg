@@ -100,17 +100,10 @@ class Config extends BaseClass {
         }
 
         /*******************************************************************************************
-         * Generate new local api.key if missing.
-         ******************************************************************************************/
-        if (file_exists("$basedir/config/keys/api.key") === false) {
-            file_put_contents("$basedir/config/keys/api.key", GenGUIDv4(), LOCK_EX);
-        }
-
-        /*******************************************************************************************
          * Load any existing configuration file.
          ******************************************************************************************/
-        if (file_exists($basedir.'/config/config.php')) {
-            $this->config = require $basedir.'/config/config.php';
+        if (file_exists('/etc/lorg/config/config.php')) {
+            $this->config = require '/etc/lorg/config/config.php';
         } else {
             $this->config = [];
         }

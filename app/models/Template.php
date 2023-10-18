@@ -29,7 +29,7 @@ class TemplateModel extends Model {
     {
         $filename     = array_key_exists('f', $params) ? $params['f'] : 'UNKNOWN';
         $template     = $this->config['template'];
-        $templatefile = "$this->basedir/template/$template/$filename";
+        $templatefile = "/etc/lorg/template/$template/$filename";
 
         if (file_exists($templatefile)) {
             $filetype = file_get_type($templatefile);

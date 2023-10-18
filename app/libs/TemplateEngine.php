@@ -46,7 +46,7 @@
 	}
 
 	private function includeFiles($file) {
-		$fullpath = "$this->basedir/template/$this->template/$file";
+		$fullpath = "/etc/lorg/template/$this->template/$file";
 		if (file_exists($fullpath)) {
 			$code = file_get_contents($fullpath);
 		}

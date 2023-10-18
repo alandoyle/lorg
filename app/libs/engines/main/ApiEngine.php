@@ -62,52 +62,13 @@
      */
     static function getRandomApiServer(&$config)
     {
-        $count = 0;
-        $found = false;
+        /*******************************************************************************************
+         * Set the random API Server Instance
+         ******************************************************************************************/
+
         $instances = $config['api_servers'];
-        $basedir   = $config['basedir'];
+        $instance  = $instances[array_rand($instances, 1)];
 
-        do {
-            $instance = $instances[array_rand($instances, 1)];
-            $keyfile  =
-            $contents = '';
-
-            switch (strtolower($instance['Type']))
-            {
-                case 'local':
-                    $keyfile = 'api.key';
-                    break;
-                case 'remote':
-                    $keyfile = $instance['Name'].'.key';
-                    break;
-            }
-
-            /*******************************************************************************************
-             * Load the API Key.
-             ******************************************************************************************/
-            if (file_exists("$basedir/config/keys/$keyfile")) {
-                $contents  = file_get_contents("$basedir/config/keys/$keyfile");
-                if (strlen(trim($contents)) > 0) {
-                    $config['api_url'] = $instance['URL'];
-                    $config['api_key'] = trim($contents);
-                    $found = true;
-                }
-            }
-
-            /*******************************************************************************************
-             * Remove duff entries from the instances list.
-             ******************************************************************************************/
-            if ($found === false) {
-                for ($n = 0; $n < count($instances); $n++) {
-                    if ($instances[$n]['Name'] === $instance['Name']) {
-                        unset($instances[$n]);
-                        $instances = array_values($instances);
-                        break;
-                    }
-                }
-            }
-            $count++;
-        }
-        while(($found === false) && ($count < 5));
+        $config['api_url'] = $instance['URL'];
     }
 }

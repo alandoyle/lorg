@@ -83,7 +83,7 @@ class Model extends BaseClass {
 
         // Add list of templates
         $templates = [];
-        $templatedirs = scandir("$this->basedir/template/");
+        $templatedirs = scandir('/etc/lorg/template/');
         foreach($templatedirs as $templatedir) {
             switch ($templatedir)
             {
@@ -91,7 +91,7 @@ class Model extends BaseClass {
                 case '..':
                     break;
                 default:
-                    if (is_dir("$this->basedir/template/$templatedir")) {
+                    if (is_dir('/etc/lorg/template/$templatedir')) {
                         array_push($templates,
                             array (
                                 "name"      => $templatedir,
