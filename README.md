@@ -8,7 +8,7 @@
 
 A framework and javascript free privacy respecting Google Text/Image Proxy originally based on a cut-down version of LibreX but now evolved into simple, lightweight API driven Meta Search Engine.
 
-![lorg screenshot](https://raw.githubusercontent.com/alandoyle/lorg/main/screenshot/screenshot1.png)
+![lorg screenshot](https://raw.githubusercontent.com/alandoyle/lorg/main/screenshot/screenshot.png)
 
 ## Docker Setup (Recommended)
 
