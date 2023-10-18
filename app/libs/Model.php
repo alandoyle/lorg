@@ -91,7 +91,7 @@ class Model extends BaseClass {
                 case '..':
                     break;
                 default:
-                    if (is_dir('/etc/lorg/template/$templatedir')) {
+                    if (is_dir("/etc/lorg/template/$templatedir")) {
                         array_push($templates,
                             array (
                                 "name"      => $templatedir,
