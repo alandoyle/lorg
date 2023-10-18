@@ -1,7 +1,3 @@
-# INCOMPLETE - W.I.P - Pre-Alpha Check-in
-
----
-
 # lorg
 
 [(Pronounced Lur-Ugh - An Irish word meaning "Track, trace; seek, search for." )](https://www.teanglann.ie/en/fgb/lorg)
