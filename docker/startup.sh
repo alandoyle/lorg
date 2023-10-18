@@ -6,6 +6,13 @@ DST_DIR=/etc/lorg
 GIT_DIR=/usr/share/lorg
 SRC_REPO=https://github.com/alandoyle/lorg
 
+# Create the 'app' user
+if ! id app >/dev/null 2>&1; then
+	addgroup --gid $OWNER_GID app
+	useradd -d /var/www/tt-rss -g app -u $OWNER_UID app
+    usermod -aG www-data,app app
+fi
+
 # Get latest version from GIT
 if [ ! -d $GIT_DIR/.git ]; then
 	[ ! -d $DST_DIR ] && mkdir -p $DST_DIR
@@ -45,6 +52,7 @@ cp -Rf ${GIT_DIR}/template/* ${DST_DIR}/template
 
 # Set permissions
 chmod -R a=r,a+X,u+w $DST_DIR
+chown -R app:app $DST_DIR
 
 # Configure PHP
 echo "Setting PHP memory_limit to ${PHP_WORKER_MEMORY_LIMIT}"
@@ -60,7 +68,7 @@ rm -f /tmp/error.log && mkfifo /tmp/error.log
 
 # Make sure the PHP FPM socket symlink exists
 if [ ! -h /var/run/php-fpm.sock ] ; then
-	ln -s /var/run/php/php8.1-fpm.pid /var/run/php/php-fpm.pid
+	ln -s /var/run/php/php8.1-fpm.sock /var/run/php/php-fpm.sock
 fi
 
 (tail -q -f /tmp/error.log >> /proc/1/fd/2) &
