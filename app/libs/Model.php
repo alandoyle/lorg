@@ -72,9 +72,12 @@ class Model extends BaseClass {
         $mappings = array('q' => 'query', 't' => 'type', 'p' => 'pagenum');
         foreach ($params as $key => $value) {
             if (array_key_exists($key, $mappings)) {
-            $this->data[$mappings[$key]] = $value;
+                $this->data[$mappings[$key]] = $value;
             }
         }
+
+        // Store URL encoded version of query
+        $this->data['query_encoded'] = urlencode($this->data['query']);
 
         // Setup default
         $this->data['categories'] = [];

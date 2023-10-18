@@ -26,7 +26,7 @@
         <input type="hidden" name="p" value="0">
         <div class="sub-search-button-wrapper">
 {% foreach($categories as $category): %}
-            <a {{ $category['class'] }} href="./search?q={{ $query }}&t={{ $category['type'] }}" rel="nofollow"><img src="./template/images/{{ $category['typename'] }}_result.png" alt="{{ $category['description'] }} Result" title="{{ $category['description'] }} Result" />{{ $category['description'] }}</a>
+            <a {{ $category['class'] }} href="./search?q={{ $query_encoded }}&t={{ $category['type'] }}" rel="nofollow"><img src="./template/images/{{ $category['typename'] }}_result.png" alt="{{ $category['description'] }} Result" title="{{ $category['description'] }} Result" />{{ $category['description'] }}</a>
 {% endforeach; %}
         </div>
         <hr/>
@@ -52,21 +52,21 @@
     </div>
     <div class="next-page-button-wrapper">
 {% if ($pagenum == 0): %}
-        <a class="next-page-only-button" href="./search?q={{ $query }}&t={{ $type }}&p={{ $pagenum + 1 }}" aria-label="Next page" rel="nofollow">Next &gt;</a>
+        <a class="next-page-only-button" href="./search?q={{ $query_encoded }}&t={{ $type }}&p={{ $pagenum + 1 }}" aria-label="Next page" rel="nofollow">Next &gt;</a>
 {% endif; %}
 {% if ($pagenum > 0 && $result_count > 0): %}
         <div class="next-page-button-container">
-            <a class="prev-page-button" href="./search?q={{ $query }}&t={{ $type }}&p={{ $pagenum - 1 }}" style="text-align:right" aria-label="Previous page" rel="nofollow">
+            <a class="prev-page-button" href="./search?q={{ $query_encoded }}&t={{ $type }}&p={{ $pagenum - 1 }}" style="text-align:right" aria-label="Previous page" rel="nofollow">
                 <span class="no-highlight">&lt;</span>
             </a>
             <span class="page-number">Page {{ $pagenum + 1 }}</span>
-            <a class="next-page-button" href="./search?q={{ $query }}&t={{ $type }}&p={{ $pagenum + 1 }}" style="text-align:left" aria-label="Next page" rel="nofollow">
+            <a class="next-page-button" href="./search?q={{ $query_encoded }}&t={{ $type }}&p={{ $pagenum + 1 }}" style="text-align:left" aria-label="Next page" rel="nofollow">
                 <span class="no-highlight">&gt;</span>
             </a>
         </div>
 {% endif; %}
 {% if ($pagenum > 0 && $result_count == 0): %}
-    <a class="next-page-only-button" href="./search?q={{ $query }}&t={{ $type }}&p={{ $pagenum - 1 }}" aria-label="Previous page" rel="nofollow">&lt; Previous</a>
+    <a class="next-page-only-button" href="./search?q={{ $query_encoded }}&t={{ $type }}&p={{ $pagenum - 1 }}" aria-label="Previous page" rel="nofollow">&lt; Previous</a>
 {% endif; %}
     </div>
 {% include footer.tpl %}
