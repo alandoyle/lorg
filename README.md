@@ -22,8 +22,8 @@ docker pull alandoyle/lorg
 ```bash
 docker run --name=lorg \
   -d --init \
-  -v <MY_CONFIG_PATH>:/var/www/lorg/config \
-  -v <MY_TEMPLATE_PATH>:/var/www/lorg/template \
+  -v <MY_CONFIG_PATH>:/etc/lorg/config \
+  -v <MY_TEMPLATE_PATH>:/etc/lorg/template \
   -p 8000:80/tcp \
   alandoyle/lorg:latest
 ```
@@ -42,8 +42,8 @@ services:
    ports:
      - "8000:80/tcp"
    volumes:
-     - ./lorg/config:/var/www/lorg/config
-     - ./lorg/template:/var/www/lorg/template
+     - ./lorg/config:/etc/lorg/config
+     - ./lorg/template:/etc/lorg/template
 ```
 
 ### Ports
@@ -54,10 +54,10 @@ services:
 
 ### Volumes
 
-| Path                     | Description                       |
-|--------------------------|-----------------------------------|
-| `/var/www/lorg/config`   | path for lorg configuration files |
-| `/var/www/lorg/template` | path for lorg template files      |
+| Path                 | Description                       |
+|----------------------|-----------------------------------|
+| `/etc/lorg/config`   | path for lorg configuration files |
+| `/etc/lorg/template` | path for lorg template files      |
 
 ## Standalone Setup
 

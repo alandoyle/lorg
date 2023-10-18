@@ -10,31 +10,30 @@ sudo systemctl enable nginx
 A sample Nginx site configuration file can be found in *standalone/lorg.nginx.conf*.
 
 ```bash
-git clone https://github.com/alandoyle/lorg /var/www/lorg
+sudo git clone https://github.com/alandoyle/lorg /usr/share/lorg
 ```
 
 ### Install the default configuration.
 
 ```bash
-sudo mkdir -p  /var/www/lorg/config
-sudo cp /var/www/lorg/docker/config.php /var/www/lorg/config
-sudo chown -R www-data:www-data /var/www/lorg/config
+sudo mkdir -p  /etc/lorg/config /etc/lorg/template
+sudo cp /usr/share/lorg/docker/config.php /etc/lorg/config
+sudo cp -R /usr/share/lorg/template/* /etc/lorg/template
 ```
 
 ### Add extra instances (optional)
 
 ```bash
-sudo cp /var/www/lorg/docker/instances.json.example /var/www/lorg/config/instance.json
+sudo cp /usr/share/lorg/docker/instances.json.example /etc/lorg/config/instance.json
 ```
 
-Edit this file to point to instances for which you have an API key.
 NOTE: The local instance is automatically added to the instance list unless disabled in `config.php`
 
 ### Configure nginx
 
 ```bash
 sudo rm /etc/nginx/sites-enabled/default
-sudo cp /var/www/lorg/standalone/lorg.nginx.conf /etc/nginx/sites-available/lorg
+sudo cp /usr/share/lorg/standalone/lorg.nginx.conf /etc/nginx/sites-available/lorg
 sudo ln -s /etc/nginx/sites-available/lorg /etc/nginx/sites-enabled/lorg
 sudo nginx -t
 sudo systemctl restart nginx
