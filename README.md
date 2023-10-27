@@ -2,7 +2,7 @@
 
 [(Pronounced Lur-Ugh - An Irish word meaning "Track, trace; seek, search for." )](https://www.teanglann.ie/en/fgb/lorg)
 
-A framework and javascript free privacy respecting Google Text/Image Proxy originally based on a cut-down version of LibreX but now evolved into simple, lightweight API driven Meta Search Engine.
+A framework and javascript free privacy respecting Invidious/Google Text/Image Proxy based on a simple, lightweight API driven Meta Search Engine.
 
 ![lorg screenshot](https://raw.githubusercontent.com/alandoyle/lorg/main/screenshot/screenshot.png)
 
