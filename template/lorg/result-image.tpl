@@ -32,7 +32,7 @@
         <hr/>
     </form>
     <div class="time-result-container">
-        <div class="text-result-wrapper"><span id="time">Fetched {{ $result_count }} result{{ ($result_count == 1) ? "" : "s" }} in {{ $end_time }} seconds ({{ $engine }}).</span></div>
+        <div class="text-result-wrapper"><span id="time">Fetched {{ $result_count }} result{{ ($result_count == 1) ? "" : "s" }} in {{ $end_time }} seconds ({{ $engine_name }}).</span></div>
     </div>
     <div class="image-result-container">
 {% foreach($results as $item): %}

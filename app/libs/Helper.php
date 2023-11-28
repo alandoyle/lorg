@@ -332,6 +332,81 @@ function get_my_ip_external()
 }
 
 /**
+ * Determines if external IP address details.
+ *
+ * @param none
+ * @return array
+ */
+function get_my_ip_details()
+{
+    $download_file = true;
+    $ipaddress     = get_my_ip_external();
+    $ip_api_file   = "/etc/lorg/cache/ip/$ipaddress.json";
+
+    // Check if cache file is less than 2 hours old.
+    if ((file_exists($ip_api_file) === true) &&
+        (time() - filemtime($ip_api_file) < TWO_HOURS)) {
+        $download_file = false;
+    }
+
+    // Download a new copy of the JSON file.
+    if ($download_file) {
+        $ip_api_url = "http://ip-api.com/json/$ipaddress?fields=57562";
+        debug_var($ip_api_url);
+        $response = download_url($ip_api_url);
+        file_put_contents($ip_api_file, $response['data']);
+    }
+
+    // Return the contents of the file.
+    $contents = file_get_contents($ip_api_file);
+    return json_decode($contents, true);
+}
+
+/**
+ * Download the weather details.
+ *
+ * @param array $ipdetails
+ * @return string
+ */
+function get_weather_data($ipdetails)
+{
+    if (is_array($ipdetails) === false) {
+        return "";
+    }
+
+    if (array_key_exists('lat', $ipdetails) === false) {	
+        return "";
+    }
+    if (array_key_exists('lon', $ipdetails) === false) {
+        return "";
+    }
+
+    $download_file = true;
+    $latitude      = $ipdetails['lat'];
+    $longitude     = $ipdetails['lon'];
+    $country       = urlencode($ipdetails['countryCode']); // "GB"
+    $region        = urlencode($ipdetails['regionName']);  // "England"
+    $city          = urlencode($ipdetails['city']);        // "Birmingham"
+    $cache_file    = "/etc/lorg/cache/region/$country-$region-$city.json";
+
+    // Check if cache file is less than 1 hour old.
+    if ((file_exists($cache_file) === true) &&
+        (time() - filemtime($cache_file) < ONE_HOUR)) {
+        $download_file = false;
+    }
+
+    // Download a new copy of the JSON file.
+    if ($download_file) {
+        $weather_url = "https://api.open-meteo.com/v1/forecast?latitude=$latitude&longitude=$longitude&current=temperature_2m,apparent_temperature,precipitation,cloudcover&windspeed_unit=mph&timezone=UTC";
+        $response = download_url($weather_url);
+        file_put_contents($cache_file, $response['data']);
+    }
+
+    // Return the contents of the file.
+    return file_get_contents($cache_file);
+}
+
+/**
  * Returns a GUIDv4 string
  *
  * Uses the best cryptographically secure method
@@ -405,6 +480,10 @@ function debug_var($var)
  */
 function debug_array($array)
 {
+    if (is_array($array) === false) {
+        debug_var("INVALID ARRAY!");
+    }
+
     /*******************************************************************************************
      * Sort the array for ease of readability.
      ******************************************************************************************/

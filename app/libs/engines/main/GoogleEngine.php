@@ -91,6 +91,9 @@
         $xpath       = get_xpath($webresponse);
 
         $resultcount = 0;
+        $prevtitle = '';
+        $prevurl   = '';
+
         foreach($xpath->query("//div[@id='search']//div[contains(@class, 'g')]") as $result)
         {
             $classcount = count($xpath->evaluate(".//div[@class='yuRUbf']//a/@href", $result));
@@ -107,7 +110,6 @@
                     continue;
                 }
 
-                $resultcount++;
                 $url         = $url->textContent;
                 $title       = $xpath->evaluate(".//h3", $result)[$x];
                 $description = $xpath->evaluate(".//div[contains(@class, 'VwiC3b')]", $result)[$x];
@@ -117,18 +119,36 @@
                                 ($x > 0 ? $previmage : $blank_image) :
                                 $image->textContent;
                 $previmage   = $image_data;
-                array_push($results,
-                    array (
-                        "title"       => htmlspecialchars($title->textContent),
-                        "sitename"    => $sitename == null ? "" : htmlspecialchars($sitename->textContent),
-                        "image"       => $image_data,
-                        "url"         => htmlspecialchars($url),
-                        "base_url"    => htmlspecialchars(get_base_url($url)),
-                        "description" => $description == null ?
-                                            "No description was provided for this site." :
-                                            htmlspecialchars($description->textContent)
-                    )
-                );
+
+                if (!empty($title)) {
+                    $title = trim($title->textContent);
+                }
+                if (!empty($url)) {
+                    $url = trim($url);
+                }
+
+                // Check if current result is a duplicate of the previous result.
+                if (($title == $prevtitle) && ($url == $prevurl)) {
+                    continue;
+                } else {
+                    array_push($results,
+                        array (
+                            "title"       => htmlspecialchars($title),
+                            "sitename"    => $sitename == null ? "" : htmlspecialchars($sitename->textContent),
+                            "image"       => $image_data,
+                            "url"         => htmlspecialchars($url),
+                            "base_url"    => htmlspecialchars(get_base_url($url)),
+                            "description" => $description == null ?
+                                                "No description was provided for this site." :
+                                                htmlspecialchars($description->textContent)
+                        )
+                    );
+                    $resultcount++;
+                }
+
+                // Save current title and URL as Google sometimes duplicates them.
+                $prevtitle = $title;
+                $prevurl   = $url;
             }
         }
         $config['result_count'] = $resultcount;

@@ -30,7 +30,6 @@
         {
             case self::SPECIAL_CURRENCY:    $url = Currency::getUrl();                 break;
             case self::SPECIAL_DEFINITION:  $url = Definition::getUrl($query);         break;
-            case self::SPECIAL_WEATHER:     $url = Weather::getUrl();                  break;
             case self::SPECIAL_WIKIPEDIA:   $url = Wikipedia::getUrl($query, $config); break;
             default:                        $url = NULL;                               break;
         }
@@ -53,7 +52,7 @@
             case self::SPECIAL_DEFINITION:  return Definition::getResults($special_ch);
             case self::SPECIAL_IPADDRESS:   return IpAddress::getResults();
             case self::SPECIAL_USERAGENT:   return UserAgent::getResults();
-            case self::SPECIAL_WEATHER:     return Weather::getResults($special_ch);
+            case self::SPECIAL_WEATHER:     return Weather::getResults($config['timezone']);
             case self::SPECIAL_WIKIPEDIA:   return Wikipedia::getResults($special_ch, $query, $config);
             default:                        return [];
         }

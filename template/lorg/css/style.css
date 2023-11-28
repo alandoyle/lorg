@@ -682,10 +682,36 @@ a[title] {
     overflow: auto;
 }
 
+.weather-container {
+    max-width: 1000px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.weather-table li {
+    border-radius: 3px;
+    /*padding: 25px 30px;*/
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+.weather-table .col-1 {
+    flex-basis: 25%;
+}
+.weather-table .col-2 {
+    flex-basis: 75%;
+}
+
 /* mobile view */
 @media only screen and (max-width: 760px) {
+    .weather-table .col-1 {
+        flex-basis: 50%;
+    }
+    .weather-table .col-2 {
+        flex-basis: 50%;
+    }
+
     p {
-        font-size: 16px;
+        font-size: 14px;
     }
 
     html {

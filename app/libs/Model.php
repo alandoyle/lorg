@@ -60,6 +60,7 @@ class Model extends BaseClass {
             'api_disabled'             => $this->config['api_disabled'],
             'api_only_forced'          => $this->config['api_only_forced'],
             'hide_templates'           => $this->config['hide_templates'],
+            'footer_message'           => $this->config['footer_message'],
             'result_count'             => 0,
         ];
 

@@ -1,3 +1,6 @@
+{% if (!empty($footer_message)): %}
+	<div style="text-align: center;"><br/><p>{{ $footer_message }}</p></div>
+{% endif; %}
     <div class="footer-container">
         <a href="https://github.com/alandoyle/lorg/" target="_blank">Github</a>
 {% if ($api_disabled != true): %}
@@ -40,11 +43,12 @@
                                     <input type="checkbox" name="safe_search"<?php echo isset($_COOKIE["safe_search"]) ? "checked"  : ""; ?> >
                                 </div>
                             </div>
+
                             <h2>Invidious settings</h2>
                             <div class="settings-textbox-container">
                                 <div>
                                     <span>Instance URL</span>
-                                    <input type="text" name="invidious_url" placeholder="E.g.: https://y.com.sb" value="{{ $invidious_url }}"/>
+                                    <input type="text" name="invidious_url" placeholder="E.g.: https://i.lorg.dev" value="{{ $invidious_url }}"/>
                                 </div>
                             </div>
                             <div>

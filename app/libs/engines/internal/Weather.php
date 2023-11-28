@@ -15,28 +15,14 @@
 
 class Weather {
     // Static function
-    public static function getUrl()
-    {
-        // Build the URL.
-        $remoteip    = get_my_ip_external();
-        $url         = "https://wttr.in/@$remoteip?format=j1";
-
-        return $url;
-    }
-
-    public static function getResults($special_ch)
+    public static function getResults($timezone)
     {
         $response = emptyResponse();
         try
         {
-            // No data connection found. Wttr.in down?
-            if ($special_ch === NULL) {
-                return $response;
-            }
-
-            // Build the URL and download the data from Wttr.in.
-            $webresponse = curl_multi_getcontent($special_ch);
-
+            // Build the URL.
+            $ipdetails   = get_my_ip_details();
+            $webresponse = get_weather_data($ipdetails);
             // Check if we've got some data.
             if (empty($webresponse)) {
                 return $response;
@@ -48,26 +34,43 @@ class Weather {
                 return $response;
             }
 
-            $current_weather    = $json_response["current_condition"][0];
-            $temp_c             = $current_weather["temp_C"];
-            $temp_f             = $current_weather["temp_F"];
-            $feels_like_c       = $current_weather["FeelsLikeC"];
-            $feels_like_f       = $current_weather["FeelsLikeF"];
-            $description        = $current_weather["weatherDesc"][0]["value"];
-            $formatted_response = "$description - $temp_c °C | $temp_f °F (Feels like $feels_like_c °C | $feels_like_f °F)";
+            $weather_details = array("temperature_2m"       => "Temperature",
+                                     "apparent_temperature" => "Feels like",
+                                     "precipitation"        => "Precipitation",
+                                     "cloudcover"           => "Cloud Cover",
+                                    );
+            $countrycode     = $ipdetails['countryCode']; // e.g. "GB"
+            $country         = $ipdetails['regionName'];  // e.g. "England"
+            $areaName        = $ipdetails['city'];        // e.g. "Birmingham"
+            $current_weather = $json_response["current"];
+            $current_units   = $json_response["current_units"];
 
-            $nearest_area         = $json_response["nearest_area"][0];
-            $areaName             = $nearest_area["areaName"][0]["value"];
-            $country              = $nearest_area["country"][0]["value"];
+            $update_time = $current_weather['time'];
+
+            $datetime = $update_time;
+            $date = new \DateTime( $datetime, new \DateTimeZone( 'UTC' ) );
+            $date->setTimezone( new \DateTimeZone( $timezone ) );
+            $update_time = $date->format('D, d M Y H:i:s');
+
             $formatted_sourcename = "Current Weather".((!$areaName&&!$country)?"":" for ")."$areaName".((!$areaName||!$country)?"":",")." $country";
 
+            $weather_forecast = "<div class='weather-container'><strong>Updated: $update_time</strong><ul class='weather-table'>";
+            foreach($weather_details as $key => $name) {
+                $value = $current_weather[$key];
+                $units = $current_units[$key];
+                $weather_forecast .= "<li class='weather-row'><div class='col col-1'>$name:</div><div class='col col-2'>$value $units</div></li>";
+            }
+            $weather_forecast .= "</ul></div>";
 
-            $response["response"]   = str_replace("\n", "<br/>", htmlspecialchars($formatted_response));
-            $response["source"]     = "https://wttr.in";
-            $response["source_url"] = self:: getUrl();
+            $response["response"]   = $weather_forecast;
+            $response["source"]     = "https://open-meteo.com";
+            $response["source_url"] = "https://open-meteo.com/en/docs";
             $response["sourcename"] = $formatted_sourcename;
         }
-        catch(Exception $e) {}
+        catch(Exception $e)
+        {
+            $response = "";
+        }
 
         return $response;
     }

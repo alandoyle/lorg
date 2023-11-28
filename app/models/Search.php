@@ -62,7 +62,7 @@
         $this->data['result_count'] = count($this->data['results']);
 
         // Calculate time taken
-        $this->data['engine']   = $search_engine->GetEngineName($type);
-        $this->data['end_time'] = number_format(microtime(true) - $start_time, 2, '.', '');
+        $this->data['engine_name'] = $search_engine->GetEngineName($type);
+        $this->data['end_time']    = number_format(microtime(true) - $start_time, 2, '.', '');
     }
 }

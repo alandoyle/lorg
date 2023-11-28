@@ -25,3 +25,8 @@ const  VALUE_STRING  = 0;
 const  VALUE_NUMERIC  = 1;
 /** BOOLEAN Type Value */
 const  VALUE_BOOLEAN  = 2;
+
+/** NUMERIC Type Value */
+const ONE_HOUR = 3600;
+/** NUMERIC Type Value */
+const TWO_HOURS = 7200;
