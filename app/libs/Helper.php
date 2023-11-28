@@ -343,11 +343,6 @@ function get_my_ip_details()
     $ipaddress     = get_my_ip_external();
     $ip_api_file   = "/etc/lorg/cache/ip/$ipaddress.json";
 
-    // Check if directory exists
-    if (is_dir('/etc/lorg/cache/ip') === false) {
-        mkdir('/etc/lorg/cache/ip', 0777, true);
-    }
-
     // Check if cache file is less than 2 hours old.
     if ((file_exists($ip_api_file) === true) &&
         (time() - filemtime($ip_api_file) < TWO_HOURS)) {
@@ -392,11 +387,6 @@ function get_weather_data($ipdetails)
     $region        = urlencode($ipdetails['regionName']);  // "England"
     $city          = urlencode($ipdetails['city']);        // "Birmingham"
     $cache_file    = "/etc/lorg/cache/region/$country-$region-$city.json";
-
-    // Check if directory exists
-    if (is_dir('/etc/lorg/cache/region') === false) {
-        mkdir('/etc/lorg/cache/region', 0777, true);
-    }
 
     // Check if cache file is less than 1 hour old.
     if ((file_exists($cache_file) === true) &&

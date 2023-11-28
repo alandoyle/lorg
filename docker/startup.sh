@@ -9,25 +9,13 @@ SRC_REPO=https://github.com/alandoyle/lorg
 # Create the 'app' user
 if ! id app >/dev/null 2>&1; then
 	addgroup --gid $OWNER_GID app
-	useradd -d /var/www/tt-rss -g app -u $OWNER_UID app
+	useradd -d $DST_DIR -g app -u $OWNER_UID app
     usermod -aG www-data,app app
 fi
 
 # Get latest version from GIT
-if [ ! -d $GIT_DIR/.git ]; then
-	[ ! -d $DST_DIR ] && mkdir -p $DST_DIR
-	chown -R $OWNER_UID:$OWNER_GID $DST_DIR
-
-	echo cloning lorg source from $SRC_REPO to $GIT_DIR...
-	git clone $SRC_REPO $GIT_DIR || echo error: failed to clone repository.
-else
-	echo updating lorg source in $GIT_DIR from $SRC_REPO...
-
-	cd $GIT_DIR && \
-		git config core.filemode false && \
-		git config pull.rebase false && \
-		git pull || echo error: unable to update repository.
-fi
+echo cloning lorg source from $SRC_REPO to $GIT_DIR...
+git clone $SRC_REPO $GIT_DIR || echo error: failed to clone repository.
 
 # Update certificates
 update-ca-certificates || true
@@ -39,10 +27,16 @@ if [ ! -e $GIT_DIR/public/index.php ]; then
 	exit 1
 fi
 
+# Build configuration directories
+[ ! -d $DST_DIR ]              && mkdir -p $DST_DIR
+[ ! -d $DST_DIR/cache/ip ]     && mkdir -p $DST_DIR/cache/ip
+[ ! -d $DST_DIR/cache/region ] && mkdir -p $DST_DIR/cache/region
+
 # Check if we have a config file
 if [ ! -f ${DST_DIR}/config/config.php ] ; then
 	[ ! -d ${DST_DIR}/config ] && mkdir -p ${DST_DIR}/config
     cp ${GIT_DIR}/docker/config.php ${DST_DIR}/config/config.php
+    cp ${GIT_DIR}/docker/config.php ${DST_DIR}/config/config.php.template
 fi
 
 # Check if we have templates (at least the latest default 'lorg' template)
@@ -53,6 +47,9 @@ cp -Rf ${GIT_DIR}/template/* ${DST_DIR}/template
 # Set permissions
 chmod -R a=r,a+X,u+w $DST_DIR
 chown -R app:app $DST_DIR
+
+# Configure nginx
+cp -f $GIT_DIR/standalone/lorg.nginx.conf /etc/nginx/sites-available/default
 
 # Configure PHP
 echo "Setting PHP memory_limit to ${PHP_WORKER_MEMORY_LIMIT}"
