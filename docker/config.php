@@ -19,6 +19,7 @@ return [
     'opensearch_long_name'     => 'lorg Metasearch Engine',
 
     'accept_langauge'          => 'en-GB',
+    'timezone'                 => 'Europe/London',
 
     'template'                 => 'lorg',
     'hide_templates'           => false,
@@ -32,5 +33,7 @@ return [
 
     'wikipedia_language'       => 'en',
 
-    'invidious_url'            => 'https://y.com.sb',
+    'invidious_url'            => 'https://i.lorg.dev',
+
+    'footer_message'           => '',
 ];

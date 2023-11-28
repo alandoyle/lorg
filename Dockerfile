@@ -6,7 +6,7 @@ ARG DEBIAN_FRONTEND="noninteractive"
 ENV SCRIPT_ROOT=/usr/share/lorg
 
 # Install software
-RUN apt-get -qq update -y && apt-get -qq upgrade -y && apt-get -qq install git sudo -y
+RUN apt-get -qq update && apt-get -qq upgrade -y && apt-get -qq install git sudo -y
 RUN apt-get -qq install nginx-core php php-fpm php-common php-curl php-dom tzdata supervisor -y
 RUN rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
 RUN sed -i -e 's/;\(clear_env\) = .*/\1 = no/i' \
