@@ -69,7 +69,7 @@
 {% if ($result_count == 0): %}
         <h1>No more results.</h1>
 {% endif; %}
-        <div class="text-result-wrapper"><hr/><span id="time">Fetched the results in {{ $end_time }} seconds using {{ $engine }}.</span></div>
+        <div class="text-result-wrapper"><hr/><span id="time">Fetched the results in {{ $end_time }} seconds using {{ $engine_name }}.</span></div>
     </div>
     <div class="next-page-button-wrapper">
 {% if ($pagenum == 0): %}

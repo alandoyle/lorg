@@ -345,7 +345,7 @@ function get_my_ip_details()
 
     // Check if directory exists
     if (is_dir('/etc/lorg/cache/ip') === false) {
-        mkdir('/etc/lorg/cache/ip', 0644, true);
+        mkdir('/etc/lorg/cache/ip', 0777, true);
     }
 
     // Check if cache file is less than 2 hours old.
@@ -395,7 +395,7 @@ function get_weather_data($ipdetails)
 
     // Check if directory exists
     if (is_dir('/etc/lorg/cache/region') === false) {
-        mkdir('/etc/lorg/cache/region', 0644, true);
+        mkdir('/etc/lorg/cache/region', 0777, true);
     }
 
     // Check if cache file is less than 1 hour old.
