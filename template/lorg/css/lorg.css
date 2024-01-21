@@ -53,7 +53,7 @@ p {
 
 .site-logo {
     display: inline-block;
-    background-image: url(/template/images/logo.svg);
+    background-image: url(/template/lorg/images/logo.svg);
     width: 630px;
     height: 110px;
     background-size: cover;
@@ -73,7 +73,7 @@ p {
 
 .site-logo-search {
     display: inline-block;
-    background-image: url(/template/images/logo.svg);
+    background-image: url(/template/lorg/images/logo.svg);
     margin-top: 15px;
     width: 320px;
     height: 55px;

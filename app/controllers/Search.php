@@ -15,19 +15,17 @@ class SearchController extends Controller {
 
     public function execute($params)
     {
-        parent::execute($params);
-
+        /*******************************************************************************************
+         * Redirect to base URL if no query.
+         ******************************************************************************************/
         $query = array_key_exists('q', $params) ? $params['q'] : '';
-
-        // Redirect to base URL if no query
         if (strlen($query) == 0) {
             $this->RedirectToURL($this->config['base_url']);
         }
 
-        $model = $this->LoadModel($this->modelName);
-        $model->readData($params);
-
-        $view = $this->LoadView($this->viewName, $model);
-        $view->renderView();
+        /*******************************************************************************************
+         * Execute the Model and render the View.
+         ******************************************************************************************/
+        parent::execute($params);
     }
 }

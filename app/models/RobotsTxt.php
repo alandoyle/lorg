@@ -14,21 +14,21 @@
 
  class RobotsTxtModel extends Model {
     protected $autoRobotTxt = "# Auto-generated robots.txt\nUser-agent: *\nDisallow: /";
-    protected $defaultRobotTxt = '';
-    protected $customRobotTxt = '';
 
-    public function __construct($config)
+    public function __construct($basedir)
     {
-        parent::__construct($config);
-        $this->defaultRobotTxt = "$this->basedir/app/default/robots.txt";
-        $this->customRobotTxt  = "/etc/lorg/template/".$config['template']."/robots.txt";
+        parent::__construct($basedir);
     }
-    public function readData($params = [])
+
+    public function readData(&$config, $params = [])
     {
-        if (file_exists($this->customRobotTxt)) {
-            $this->data['text'] = file_get_contents($this->customRobotTxt);
-        } elseif (file_exists($this->defaultRobotTxt)) {
-            $this->data['text'] = file_get_contents($this->defaultRobotTxt);
+        $defaultRobotTxt = "$this->basedir/app/default/robots.txt";
+        $customRobotTxt  = "/etc/lorg/template/".$config['template']."/robots.txt";
+
+        if (file_exists($customRobotTxt)) {
+            $this->data['text'] = file_get_contents($customRobotTxt);
+        } elseif (file_exists($defaultRobotTxt)) {
+            $this->data['text'] = file_get_contents($defaultRobotTxt);
         } else {
             $this->data['text'] = $this->autoRobotTxt;
         }

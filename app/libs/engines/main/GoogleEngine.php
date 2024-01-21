@@ -15,7 +15,7 @@
 
  class GoogleEngine {
 
-    static function init($mh, $query, $type, $pagenum, &$config)
+    static function Init($mh, $query, $type, $pagenum, &$config)
     {
         $domain            = $config['google_domain'];
         $site_language     = isset($_COOKIE['google_language_site'])     ? trim(htmlspecialchars($_COOKIE['google_language_site']))     : $config['google_language_site'];
@@ -65,7 +65,7 @@
         return $google_ch;
     }
 
-    static function getResults($search_ch, $query, $type, &$config)
+    static function GetResults($search_ch, $query, $type, &$config)
     {
         switch($type)
         {
@@ -91,8 +91,9 @@
         $xpath       = get_xpath($webresponse);
 
         $resultcount = 0;
-        $prevtitle = '';
-        $prevurl   = '';
+        $prevtitle   =
+        $prevurl     =
+        $previmage   = '';
 
         foreach($xpath->query("//div[@id='search']//div[contains(@class, 'g')]") as $result)
         {

@@ -18,8 +18,9 @@
         parent::__construct($model);
     }
 
-    public function renderView()
+    public function renderView(&$config)
     {
-        $this->renderText($this->model->getData());
+        parent::renderView($config);
+        $this->renderText();
     }
 }

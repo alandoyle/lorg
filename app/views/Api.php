@@ -15,16 +15,17 @@
         parent::__construct($model);
     }
 
-    public function renderView()
+    public function renderView(&$config)
     {
-        $redirect_url = empty($this->config['api_redirect_url']) ?
-                              $this->config['base_url'] :
-                              $this->config['api_redirect_url'];
+        parent::renderView($config);
+        $redirect_url = empty($config['api_redirect_url']) ?
+                              $config['base_url'] :
+                              $config['api_redirect_url'];
         $data = $this->model->getData();
         switch($data['output'])
         {
         case 'html':
-            if ($this->config['api_redirect'] === false) {
+            if ($config['api_redirect'] === false) {
                 $this->renderHtml('api.tpl', $data);
                 return;
             }

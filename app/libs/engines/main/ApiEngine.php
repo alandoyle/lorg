@@ -15,33 +15,24 @@
 
  class ApiEngine {
 
-    static function init($mh, $query, $type, $pagenum, &$config)
+    static function Init(&$mh, $query, $type, $pagenum, &$config)
     {
-        ApiEngine::getRandomApiServer($config);
+        $query_encoded = urlencode($query);
+        $api_server = ApiEngine::getRandomApiServer($config);
+        $url =  "$api_server?q=$query_encoded&p=$pagenum&t=$type";
 
-        $search_ch           = NULL;
-        $query_encoded       = urlencode($query);
-        $config['searchurl'] = $config['api_url']."?q=$query_encoded&p=$pagenum&t=$type&key=".$config['api_key'];
-        $search_ch           = curl_init($config['searchurl']);
-        $curl_options        = get_curl_options($config['ua'], $config['accept_langauge']);
+        // Save the URL
+        $config['api_url'] = $url;
 
-        curl_setopt_array($search_ch, $curl_options);
-        curl_setopt($search_ch, CURLOPT_USERAGENT, $config['ua']);
-        curl_multi_add_handle($mh, $search_ch);
+        $api_ch = curl_init($url);
+        curl_setopt_array($api_ch, get_curl_options($config['ua'], $config['accept_langauge']));
+        curl_setopt($api_ch, CURLOPT_USERAGENT, $config['ua']);
+        curl_multi_add_handle($mh, $api_ch);
 
-        return $search_ch;
+        return $api_ch;
     }
 
-    static function Retry($mh, $search_ch, $query, $type, $pagenum, &$config)
-    {
-        $search_ch = NULL;
-
-        ApiEngine::getRandomApiServer($config);
-
-        return $search_ch;
-    }
-
-    static function GetResults($search_ch, $query, $type, $pagenum, &$config)
+    static function GetResults($search_ch, $query, $type, &$config)
     {
         // Decode the JSON response.
         $webresponse   = curl_multi_getcontent($search_ch);
@@ -49,11 +40,13 @@
         if (!$json_response) {
             return [];
         }
+        $results = $json_response['results'];
 
-        $config['result_count'] = count($json_response);
-        return $json_response;
+        $config['result_count'] = count($results);
+        $config['search_url'] = $json_response['search_url'];
+
+        return $results;
     }
-
     /**
      * Return a random API URL from an array.
      *
@@ -69,6 +62,6 @@
         $instances = $config['api_servers'];
         $instance  = $instances[array_rand($instances, 1)];
 
-        $config['api_url'] = $instance['URL'];
+        return $instance['URL'];
     }
 }

@@ -24,7 +24,7 @@ sudo cp -R /usr/share/lorg/template/* /etc/lorg/template
 ### Add extra instances (optional)
 
 ```bash
-sudo cp /usr/share/lorg/docker/instances.json.example /etc/lorg/config/instance.json
+sudo cp /usr/share/lorg/docker/instances.json.example /etc/lorg/config/instances.json
 ```
 
 NOTE: The local instance is automatically added to the instance list unless disabled in `config.php`

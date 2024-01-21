@@ -15,16 +15,16 @@
 
  class SearchModel extends Model {
 
-    public function __construct($config)
+    public function __construct($basedir)
     {
-        parent::__construct($config);
+        parent::__construct($basedir);
     }
 
-    public function readData($params = [])
+    public function readData(&$config, $params = [])
     {
-        parent::readData($params);
+        parent::readData($config, $params);
         $this->getCategories($this->data['type']);
-        $this->getSearchResults($this->data['query'], $this->data['type'], $this->data['pagenum']);
+        $this->getSearchResults($this->data['query'], $this->data['type'], $this->data['pagenum'], $config);
     }
 
     private function getCategories($active)
@@ -45,20 +45,20 @@
         $this->data['categories'] = $categories;
     }
 
-    private function getSearchResults($query, $type, $pagenum)
+    private function getSearchResults($query, $type, $pagenum, &$config)
     {
         $start_time = microtime(true);
 
-        $search_engine  = new SearchEngine($this->config);
-        $search_engine->Init($query, $type, $pagenum);
-        $search_engine->RunQuery();
+        $search_engine  = new SearchEngine($config['api_enabled']);
+        $search_engine->Query($query, $type, $pagenum, $config);
 
         // Only get Special results for Text searches, first page only.
-        $this->data['special'] = $search_engine->GetSpecialResults();
+        $this->data['special']      = $search_engine->GetSpecialResults();
 
         // Get search results
         $this->data['results']      = $search_engine->GetSearchResults();
-        $this->data['searchurl']    = array_key_exists('search_url', $this->config) ? $this->config['search_url'] : '';
+        $this->data['apiurl']       = array_key_exists('api_url', $config) ? $config['api_url'] : '';
+        $this->data['searchurl']    = array_key_exists('search_url', $config) ? $config['search_url'] : '';
         $this->data['result_count'] = count($this->data['results']);
 
         // Calculate time taken

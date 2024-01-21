@@ -23,7 +23,7 @@
  * @property-read string $defaultControllerFilename
  * @property-read string $defaultControllerClassName
  * @property-read string $defaultMethod
- * @property-read string $params
+ * @property-read array $params
  *
  ***************************************************************************************************
  * Public Methods
@@ -40,10 +40,10 @@
  **************************************************************************************************/
 class Router
 {
-    protected $defaultControllerFilename = 'Index';
+    protected $defaultControllerFilename  = 'Index';
     protected $defaultControllerClassName = 'IndexController';
-    protected $defaultMethod = 'execute';
-    protected $params = [];
+    protected $defaultMethod              = 'execute';
+    protected $params                     = [];
 
     /**
      * Router constructor.
@@ -64,11 +64,6 @@ class Router
                 $this->params[$newarg[0]] = urldecode($newarg[1]);
             }
         }
-
-        /*******************************************************************************************
-         * Store the Base Directory
-         ******************************************************************************************/
-        $this->params['_basedir_'] = $basedir;
 
         /*******************************************************************************************
          * Get Controller name to use.

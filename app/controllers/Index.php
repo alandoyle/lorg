@@ -15,21 +15,18 @@ class IndexController extends Controller {
 
     public function execute($params)
     {
-        parent::execute($params);
-
         /*******************************************************************************************
          * Index Controller only displays at the base_url.
          * Redirect if no query string or if a route is specified (Index should not have a route).
          ******************************************************************************************/
-        if ((empty($params['q']) !== true) ||
-            (!empty($params['r']))) {
+        if ((!empty($params['q'])) || (!empty($params['r']))) {
             $this->RedirectToURL($this->config['base_url']);
+            die();
         }
 
-        $model = $this->LoadModel($this->modelName);
-        $model->readData($params);
-
-        $view = $this->LoadView($this->viewName, $model);
-        $view->renderView();
+        /*******************************************************************************************
+         * Execute the Model and render the View.
+         ******************************************************************************************/
+        parent::execute($params);
     }
 }

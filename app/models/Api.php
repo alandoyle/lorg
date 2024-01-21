@@ -13,14 +13,14 @@
  */
 
  class ApiModel extends Model {
-    public function __construct($config)
+    public function __construct($basedir)
     {
-        parent::__construct($config);
+        parent::__construct($basedir);
     }
 
-    public function readData($params = [])
+    public function readData(&$config, $params = [])
     {
-        parent::readData($params);
+        parent::readData($config, $params);
         $this->data['output'] = 'json';
 
         if (empty($this->data['query'])) {
@@ -33,21 +33,20 @@
         $type    = $this->data['type'];
         $pagenum = $this->data['pagenum'];
 
-        $search_engine  = new SearchEngine($this->config);
-        $search_engine->Init($query, $type, $pagenum);
-        $search_engine->RunQuery();
+        // Create new SearchEngine object but ALWAYS set $api_enabled to FALSE to
+        // prevent the API server recursively calling API servers.
+        // The book stops here.
+        $search_engine = new SearchEngine(false);
+        $search_engine->Query($query, $type, $pagenum, $config);
 
-        // Get search results
-        $results = $search_engine->GetSearchResults();
+        // Build the JSON
+        $jsondata = [];
+        $jsondata['http_status'] = $search_engine->GetHttpStatus();
+        $jsondata['search_url']  = $config['search_url'];
+        $jsondata['results']     = $search_engine->GetSearchResults();
 
         // Get JSON results.
-        $filedata = json_encode($results, JSON_PRETTY_PRINT);
-
-        // Query failed so we send a JSON error
-        if (empty($results)) {
-            $error    = [ 'success' => 1, 'message' => 'ERROR: Unable to produce JSON search results.'];
-            $filedata = json_encode($error);
-        }
+        $filedata = json_encode($jsondata, ($config['minify_output'] == true ? JSON_MINIFY_PRINT : JSON_PRETTY_PRINT));
 
         $this->data['data'] = $filedata;
     }

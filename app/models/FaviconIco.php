@@ -13,29 +13,26 @@
  */
 
  class FaviconIcoModel extends Model {
-    protected $defaultFaviconIco = '';
-    protected $customFaviconIco = '';
-
-    public function __construct($config)
+    public function __construct($basedir)
     {
-        parent::__construct($config);
-
-        // Set defaults
-        $this->defaultFaviconIco = "$this->basedir/app/default/favicon.ico";
-        $this->customFaviconIco  = "/etc/lorg/template/".$config['template']."/favicon.ico";
+        parent::__construct($basedir);
     }
 
-    public function readData($params = [])
+    public function readData(&$config, $params = [])
     {
+        // Set defaults
+        $defaultFaviconIco = "$this->basedir/app/default/favicon.ico";
+        $customFaviconIco  = "/etc/lorg/template/".$config['template']."/favicon.ico";
+
         $filedata = '';
         $filesize = 0;
 
-        if (file_exists($this->customFaviconIco)) {
-            $filedata = file_get_contents($this->customFaviconIco);
-            $filesize = filesize($this->customFaviconIco);
-        } elseif (file_exists($this->defaultFaviconIco)) {
-            $filedata = file_get_contents($this->defaultFaviconIco);
-            $filesize = filesize($this->defaultFaviconIco);
+        if (file_exists($customFaviconIco)) {
+            $filedata = file_get_contents($customFaviconIco);
+            $filesize = filesize($customFaviconIco);
+        } elseif (file_exists($defaultFaviconIco)) {
+            $filedata = file_get_contents($defaultFaviconIco);
+            $filesize = filesize($defaultFaviconIco);
         }
 
         $this->data = [

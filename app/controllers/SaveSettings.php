@@ -15,12 +15,9 @@ class SaveSettingsController extends Controller {
 
     public function execute($params)
     {
+        /*******************************************************************************************
+         * Execute the Model and render the View.
+         ******************************************************************************************/
         parent::execute($params);
-
-        $model = $this->LoadModel($this->modelName);
-        $model->readData($_REQUEST);
-
-        $view = $this->LoadView($this->viewName, $model);
-        $view->renderView();
     }
 }

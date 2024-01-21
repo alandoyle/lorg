@@ -5,27 +5,79 @@
  * @copyright Copyright (c) Alan Doyle <me@alandoyle.com>
  * @license https://opensource.org/license/agpl-v3/ GNU Affero General Public License version 3
  *
- ***************************************************************************************************
- *
- * This is the Base Controller
- * Loads the Models and Views
- *
  **************************************************************************************************/
 
+/**
+ * This is the Base Controller class loads the Models and Views.
+ *
+ ***************************************************************************************************
+ * Properties
+ * ==========
+ * @property-read string $modelName
+ * @property-read string $viewName
+ *
+ ***************************************************************************************************
+ * Public Methods
+ * ==============
+ * @method void __construct()
+ * @method void execute($params)
+ *
+ ***************************************************************************************************
+ * Private Methods
+ * =================
+ * @method Model LoadModel($model)
+ * @method View  LoadView($view, $model)
+ *
+ **************************************************************************************************/
 class Controller extends Config {
     protected $modelName = 'InternalError';
-    protected $viewName = 'InternalError';
+    protected $viewName  = 'InternalError';
 
     public function __construct()
     {
         parent::__construct();
 
+        /*******************************************************************************************
+         * Set the Model/View names
+         ******************************************************************************************/
         $this->modelName =
         $this->viewName  = str_replace('Controller', '', $this->className);
     }
 
+    public function execute($params)
+    {
+        /*******************************************************************************************
+         * Store the basedir.
+         ******************************************************************************************/
+        $basedir = '';
+        if (array_key_exists('basedir', $params)) {
+            $basedir = $params['basedir'];
+        }
+        $this->SetBaseDir($basedir);
+
+        /*******************************************************************************************
+         * Load the Configuration
+         ******************************************************************************************/
+        if(count($this->config) === 0) {
+            $this->LoadConfig($basedir);
+        }
+        $this->config['controller'] = $this->className;
+
+        /*******************************************************************************************
+         * Build the Model
+         ******************************************************************************************/
+        $model = $this->LoadModel($this->modelName);
+        $model->readData($this->config, $params);
+
+        /*******************************************************************************************
+         * Render the View
+         ******************************************************************************************/
+        $view = $this->LoadView($this->viewName, $model);
+        $view->renderView($this->config);
+    }
+
     // Load Model
-    protected function LoadModel($model)
+    private function LoadModel($model)
     {
         // check for model file
         if(file_exists("$this->basedir/app/models/$model.php")) {
@@ -36,13 +88,14 @@ class Controller extends Config {
         }
 
         $modelClassName = $model."Model";
+        $this->config['model'] = $modelClassName;
 
         //Instantiate Model
-        return new $modelClassName($this->config);
+        return new $modelClassName($this->basedir);
     }
 
     // Load View
-    protected function LoadView($view, $model)
+    private function LoadView($view, $model)
     {
         # check for view file
         if(file_exists("$this->basedir/app/views/$view.php")) {
@@ -53,6 +106,7 @@ class Controller extends Config {
         }
 
         $viewClassName = $view."View";
+        $this->config['view'] = $viewClassName;
 
          //Instantiate View
         return new $viewClassName($model);

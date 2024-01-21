@@ -13,39 +13,29 @@
  */
 
 class BaseClass {
-    protected $basedir = '';
-    protected $config = [];
+    protected $basedir   = '';
     protected $className = 'UNKNOWN';
 
-    public function __construct($config = [])
+    public function __construct($basedir = '')
     {
         $this->className = $this->getClassName();
-        if (count($config) > 0) {
-            $this->config = $config;
-        }
-    }
-
-    public function execute($params)
-    {
-        $basedir = '';
-        if (isset($params['_basedir_'])) {
-            $basedir = $params['_basedir_'];
-        }
-        if(count($this->config) === 0) {
-            $this->LoadConfig($basedir);
-        }
-        $this->basedir = $this->config['basedir'];
+        $this->basedir   = $basedir;
     }
 
     public function RedirectToURL($url, $response_code = 302)
     {
         if (!headers_sent()) {
             foreach (headers_list() as $header)
-                header_remove($header);
+                @header_remove($header);
         }
 
-        header("Location: $url", true, $response_code);
+        @header("Location: $url", true, $response_code);
         die();
+    }
+
+    public function SetBaseDir($basedir)
+    {
+        $this->basedir = $basedir;
     }
 
     // Get Class Name as a string

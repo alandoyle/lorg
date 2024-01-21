@@ -18,8 +18,8 @@ class SaveSettingsView extends View {
         parent::__construct($model);
     }
 
-    public function renderView()
+    public function renderView(&$config)
     {
-        $this->RedirectToURL($this->config['base_url']);
+        $this->RedirectToURL($config['base_url']);
     }
 }

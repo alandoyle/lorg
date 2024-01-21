@@ -21,12 +21,9 @@ class FaviconIcoController extends Controller {
 
     public function execute($params)
     {
+        /*******************************************************************************************
+         * Execute the Model and render the View.
+         ******************************************************************************************/
         parent::execute($params);
-
-        $model = $this->LoadModel($this->modelName);
-        $model->readData($params);
-
-        $view = $this->LoadView($this->viewName, $model);
-        $view->renderView();
     }
 }

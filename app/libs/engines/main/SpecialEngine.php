@@ -22,7 +22,7 @@
     const  SPECIAL_WEATHER    = 5;
     const  SPECIAL_WIKIPEDIA  = 6;
 
-    static function Init($mh, $query, $type, $pagenum, $config)
+    static function Init(&$mh, $query, $type, $pagenum, $config)
     {
         $special_ch  = NULL;
         $specialType = self::checkQuery($query, $type, $pagenum);
@@ -64,6 +64,12 @@
         $query_lower = strtolower($query);
         $split_query = explode(" ", $query);
 
+        // Special queres are only down on the first page of a text search.
+        if (($type != SEARCH_TEXT) || ($pagenum != 0))  {
+            return $query_type;
+        }
+
+        // Work out if a Special Query is required.
         if (strpos($query_lower, "to") &&
             count($split_query) >= 4) {
             $amount_to_convert = floatval($split_query[0]);

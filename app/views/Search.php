@@ -18,14 +18,15 @@
         parent::__construct($model);
     }
 
-    public function renderView()
+    public function renderView(&$config)
     {
-        $data = $this->model->getData();
+        parent::renderView($config);
+
         $type = 0;
         $template = 'result-text.tpl';
 
-        if (array_key_exists("type", $data)) {
-            $type = $data['type'];
+        if (array_key_exists("type", $this->data)) {
+            $type = $this->data['type'];
         }
         switch($type)
         {
@@ -40,7 +41,6 @@
                 break;
         }
 
-
-        $this->renderHtml($template, $data);
+        $this->renderHtml($template);
     }
 }

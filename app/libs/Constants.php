@@ -8,25 +8,30 @@
  ***************************************************************************************************
  *
  * PHP 7 Compatible Constants.
- * Using ENUMS limits usage to PHP 8 or higher.
+ * NOTE: Using ENUMS limits usage to PHP 8 or higher.
  *
  **************************************************************************************************/
 
 /** Text Search */
-const  SEARCH_TEXT  = 0;
+define('SEARCH_TEXT',  0);
 /** Image Search */
-const  SEARCH_IMAGE = 1;
+define('SEARCH_IMAGE', 1);
 /** Video Search */
-const  SEARCH_VIDEO = 2;
+define('SEARCH_VIDEO', 2);
+/** Video Search */
+define('SEARCH_API',   3);
 
 /** STRING Type Value */
-const  VALUE_STRING  = 0;
+define('VALUE_STRING',  0);
 /** NUMERIC Type Value */
-const  VALUE_NUMERIC  = 1;
+define('VALUE_NUMERIC', 1);
 /** BOOLEAN Type Value */
-const  VALUE_BOOLEAN  = 2;
+define('VALUE_BOOLEAN', 2);
 
-/** NUMERIC Type Value */
-const ONE_HOUR = 3600;
-/** NUMERIC Type Value */
-const TWO_HOURS = 7200;
+/** One Hour (seconds) */
+define('ONE_HOUR',  3600);
+/** Two Hours (seconds) */
+define('TWO_HOURS', 7200);
+
+/** JSON Minify Flag */
+define('JSON_MINIFY_PRINT', 0);

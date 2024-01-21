@@ -14,12 +14,12 @@
 
  class SaveSettingsModel extends Model {
 
-    public function __construct($config)
+    public function __construct($basedir)
     {
-        parent::__construct($config);
+        parent::__construct($basedir);
     }
 
-    public function readData($params = [])
+    public function readData(&$config, $params = [])
     {
         parent::readData($params);
 

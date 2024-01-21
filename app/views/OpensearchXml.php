@@ -18,9 +18,9 @@
         parent::__construct($model);
     }
 
-    public function renderView()
+    public function renderView(&$config)
     {
-        $data = $this->model->getData();
-        $this->renderXml('opensearch.tpl', $data);
+        parent::renderView($config);
+        $this->renderXml('opensearch.tpl');
     }
 }

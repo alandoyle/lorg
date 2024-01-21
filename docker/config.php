@@ -5,8 +5,7 @@ return [
 
     'api_redirect'             => false,
     'api_redirect_url'         => '',
-    'api_only_forced'          => false,
-    'api_disabled'             => false,
+    'api_enabled'              => true,
 
     'google_domain'            => 'com',
     'google_language_site'     => 'en',

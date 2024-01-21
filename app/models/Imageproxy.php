@@ -9,12 +9,12 @@
  */
 
 class ImageproxyModel extends Model {
-    public function __construct($config)
+    public function __construct($basedir)
     {
-        parent::__construct($config);
+        parent::__construct($basedir);
     }
 
-    public function readData($params = [])
+    public function readData(&$config, $params = [])
     {
         $url = urldecode(array_key_exists('url', $params) ? $params['url'] : '');
 
@@ -26,7 +26,7 @@ class ImageproxyModel extends Model {
                 'type' => 'text/plain',
             ];
         } else {
-            $this->data  = download_url($url, $this->config['ua']);
+            $this->data  = download_url($url, $config['ua']);
         }
     }
 }

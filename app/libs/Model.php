@@ -14,17 +14,15 @@
 
 class Model extends BaseClass {
     protected $data = [];
-    protected $basedir = '';
 
-    public function __construct($config)
+    public function __construct($basedir)
     {
-        parent::__construct($config);
-        $this->basedir = $config['basedir'];
+        parent::__construct($basedir);
     }
 
-    public function readData($params = [])
+    public function readData(&$config, $params = [])
     {
-        $this->getBaseData($params);
+        $this->getBaseData($config, $params);
     }
 
     public function getData()
@@ -32,7 +30,7 @@ class Model extends BaseClass {
         return $this->data;
     }
 
-    public function getBaseData($params = [])
+    private function getBaseData(&$config, $params = [])
     {
         $githash = '';
         $giturl = '';
@@ -44,23 +42,23 @@ class Model extends BaseClass {
         $this->data = [
             'githash'                  => $githash,
             'giturl'                   => $giturl,
-            'baseurl'                  => $this->config['base_url'],
-            'apiurl'                   => array_key_exists('api_url', $this->config) ? $this->config['api_url'] : '',
+            'baseurl'                  => $config['base_url'],
+            'apiurl'                   => '',
             'searchurl'                => '',
-            'title'                    => $this->config['opensearch_title'],
-            'description'              => $this->config['opensearch_description'],
-            'encoding'                 => $this->config['opensearch_encoding'],
-            'longname'                 => $this->config['opensearch_long_name'],
-            'template'                 => $this->config['template'],
-            'ua'                       => $this->config['ua'],
-            'google_language_site'     => $this->config['google_language_site'],
-            'google_language_results'  => $this->config['google_language_results'],
-            'google_number_of_results' => $this->config['google_number_of_results'],
-            'invidious_url'            => $this->config['invidious_url'],
-            'api_disabled'             => $this->config['api_disabled'],
-            'api_only_forced'          => $this->config['api_only_forced'],
-            'hide_templates'           => $this->config['hide_templates'],
-            'footer_message'           => $this->config['footer_message'],
+            'title'                    => $config['opensearch_title'],
+            'description'              => $config['opensearch_description'],
+            'encoding'                 => $config['opensearch_encoding'],
+            'longname'                 => $config['opensearch_long_name'],
+            'template'                 => $config['template'],
+            'ua'                       => $config['ua'],
+            'google_language_site'     => $config['google_language_site'],
+            'google_language_results'  => $config['google_language_results'],
+            'google_number_of_results' => $config['google_number_of_results'],
+            'invidious_url'            => $config['invidious_url'],
+            'api_enabled'              => $config['api_enabled'],
+            'api_server_count'         => $config['api_server_count'],
+            'hide_templates'           => $config['hide_templates'],
+            'footer_message'           => $config['footer_message'],
             'result_count'             => 0,
         ];
 
@@ -99,7 +97,7 @@ class Model extends BaseClass {
                         array_push($templates,
                             array (
                                 "name"      => $templatedir,
-                                "selected"  => ($templatedir == $this->config['template']) ? "selected" : "",
+                                "selected"  => ($templatedir == $config['template']) ? "selected" : "",
                             )
                         );
                     }

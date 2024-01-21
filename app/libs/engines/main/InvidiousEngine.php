@@ -15,7 +15,7 @@
 
  class InvidiousEngine {
 
-    static function init($mh, $query, $type, $pagenum, &$config)
+    static function Init($mh, $query, $type, $pagenum, &$config)
     {
         // Start building the URL.
         $instance_url  = $config['invidious_url'];
@@ -34,7 +34,7 @@
         return $invidious_ch;
     }
 
-    static function getResults($search_ch, $query, $type, &$config)
+    static function GetResults($search_ch, $query, $type, &$config)
     {
         $results       = [];
         $webresponse   = curl_multi_getcontent($search_ch);

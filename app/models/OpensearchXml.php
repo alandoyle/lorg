@@ -18,8 +18,8 @@
         parent::__construct($config);
     }
 
-    public function readData($params = [])
+    public function readData(&$config, $params = [])
     {
-        parent::readData($params);
+        parent::readData($config, $params);
     }
 }

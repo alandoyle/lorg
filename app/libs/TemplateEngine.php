@@ -8,17 +8,13 @@
  */
 
  class TemplateEngine extends BaseClass {
-	protected $template = 'lorg';
-	private $minifyOutput = false;
-	private $blocks = [];
+	protected $template     = 'lorg';
+	protected $minifyOutput = false;
+	private   $blocks       = [];
 
-    public function __construct($config)
+    public function __construct($basedir)
     {
-        parent::__construct($config);
-
-		$this->basedir      = $config['basedir'];
-		$this->minifyOutput = $config['minify_output'];
-		$this->template     = $config['template'];
+        parent::__construct($basedir);
     }
 
 	public function render($file, $data = []) {
@@ -111,8 +107,10 @@
 		<meta name="ua" content="{{ $ua }}"/>
 		<meta name="search_url" content="{{ $searchurl }}"/>
 		<meta name="base_url" content="{{ $baseurl }}"/>
-{% if ($api_disabled != true): %}
+		<meta name="api_enabled" content="{{ ($api_enabled == 1 ? "TRUE" : "FALSE")  }}"/>
+{% if ($api_enabled == true): %}
 		<meta name="api_url" content="{{ $apiurl }}"/>
+		<meta name="api_server_count" content="{{ $api_server_count }}"/>
 {% endif; %}
 		<meta name="template" content="{{ $template }}"/>
 		<meta name="hide_templates" content="{{ $hide_templates }}"/>
@@ -126,8 +124,7 @@
 		<meta name="git-url" content="{{ $giturl }}"/>
 {% endif; %}
 		<link title="{{ $title }}" type="application/opensearchdescription+xml" href="opensearch.xml?method=POST" rel="search"/>
-		<link rel="stylesheet" type="text/css" href="css/base.css"/>
-		<link rel="stylesheet" type="text/css" href="template/css/style.css"/>
+		<link rel="stylesheet" type="text/css" href="template/{{ $template }}/css/{{ $template }}.css?ts={{ time() }}"/>
 		<title>{{ $title }}</title>
 	</head>
 	<body>

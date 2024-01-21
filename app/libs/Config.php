@@ -14,27 +14,29 @@
  * Properties
  * ==========
  * @property-read string $basedir
+ * @property-read array $config
  * @property-read array $defaults
  *
  ***************************************************************************************************
  * Public Methods
  * ==============
- * @method void __construct(string $querystring, string $basedir)
+ * @method void __construct()
  *
  ***************************************************************************************************
  * Protected Methods
  * =================
- * @method void LoadConfig()
+ * @method void LoadConfig($basedir)
  *
  ***************************************************************************************************
  * Private Methods
  * ===============
  * @method string getValue(string $key, int $type)
- * @method string getRandomApiServer(array $instances)
+ * @method string getCookieValue($key, $type)
  * @method string getUserAgent()
  *
  **************************************************************************************************/
 class Config extends BaseClass {
+    protected $config   = [];
     protected $defaults = [];
 
     public function __construct()
@@ -46,8 +48,7 @@ class Config extends BaseClass {
          ******************************************************************************************/
         $this->defaults = [
             'accept_langauge'          => 'en-US',
-            'api_disabled'             => false,
-            'api_only_forced'          => false,
+            'api_enabled'              => false,
             'api_redirect'             => true,
             'api_redirect_url'         => '',
             'footer_message'           => '',
@@ -114,8 +115,7 @@ class Config extends BaseClass {
          * Set defaults for missing entries.
          ******************************************************************************************/
         $this->config['accept_langauge']          = $this->getValue('accept_langauge',                VALUE_STRING);
-        $this->config['api_disabled']             = $this->getValue('api_disabled',                   VALUE_BOOLEAN);
-        $this->config['api_only_forced']          = $this->getValue('api_only_forced',                VALUE_BOOLEAN);
+        $this->config['api_enabled']              = $this->getValue('api_enabled',                    VALUE_BOOLEAN);
         $this->config['api_redirect']             = $this->getValue('api_redirect',                   VALUE_BOOLEAN);
         $this->config['api_redirect_url']         = $this->getValue('api_redirect_url',               VALUE_STRING);
         $this->config['base_url']                 = $this->getValue('base_url',                       VALUE_STRING);
@@ -175,8 +175,7 @@ class Config extends BaseClass {
          * Add local site to loaded instances.
          * Override if no external instances have been added.
          ******************************************************************************************/
-        if (($this->config['include_local_instance'] === true) &&
-            (count($ext_instances) > 0)) {
+        if ($this->config['include_local_instance'] === true) {
                 array_push($api_instances,
                     array (
                         'Name' => 'LocalSite',
@@ -186,12 +185,13 @@ class Config extends BaseClass {
                 );
         }
         $this->config['api_servers'] = $api_instances;
+        $this->config['api_server_count'] = count($api_instances);
 
         /*******************************************************************************************
          * Check if we have any API servers
          ******************************************************************************************/
         if (count($this->config['api_servers']) == 0) {
-            $this->config['api_disabled'] = true;
+            $this->config['api_enabled'] = false;
         }
     }
 

@@ -15,13 +15,13 @@
  class SearchEngine {
 
     // Configuration
-    private $config;
-    private $api_disabled = false;
+    private $api_enabled = true;
+    private $searchtype  = SEARCH_TEXT;
 
     // Handles
-    private $search_ch = NULL;
+    private $search_ch  = NULL;
     private $special_ch = NULL;
-    private $mh = NULL;
+    private $mh         = NULL;
 
     // Paramaters
     private $query   = '';
@@ -29,49 +29,55 @@
     private $pagenum = 0;
 
     // Results
-    private $search_results = [];
+    private $http_status     = 0;
+    private $search_url = '';
+    private $search_results  = [];
     private $special_results = [];
 
-    public function __construct(&$config)
+    public function __construct($api_enabled)
     {
-        $this->api_disabled = $config['api_disabled'];
-        $this->config       = $config;
-        $this->mh           = curl_multi_init();
+        $this->api_enabled = $api_enabled;
+        $this->mh          = curl_multi_init();
     }
 
-    public function Init($query, $type, $pagenum)
+    public function Query($query, $type, $pagenum, &$config)
     {
         $this->query   = $query;
         $this->type    = $type;
         $this->pagenum = $pagenum;
 
-        // Check if we're using API servers.
-        if ($this->api_disabled == false) {
-            debug_var("API: $type");
-            $this->search_ch = ApiEngine::init($this->mh, $query, $type, $pagenum, $this->config);
-            return;
-        }
-
-        switch($type)
-        {
-            case SEARCH_TEXT:  // Text Search
-                $this->special_ch = SpecialEngine::Init($this->mh, $query, $type, $pagenum, $this->config);
-            case SEARCH_IMAGE: // Image Search
-                $this->search_ch = GoogleEngine::init($this->mh, $query, $type, $pagenum, $this->config);
-                break;
-            case SEARCH_VIDEO: // Video Search
-                $this->search_ch = InvidiousEngine::init($this->mh, $query, $type, $pagenum, $this->config);
-                break;
-        }
-    }
-
-    public function RunQuery()
-    {
-        $http_status = '000';
+        // Clear before starting
+        $this->http_status = 0;
         $count = 0;
 
+        // Set search type
+        $this->searchtype = ($this->api_enabled == true) ? SEARCH_API : $type;
+
+        // Set max loops
+        $maxloops = ($this->api_enabled == true) ? 1 : 10;
+
         // Loop up to 10 times (prevent infinite loops) to get the results.
-        while (($http_status != '200') && ($count < 10)) {
+        while (($this->http_status != 200) && ($count < $maxloops)) {
+            // Clear Handles
+            $this->search_ch  = NULL;
+            $this->special_ch = NULL;
+
+            switch($this->searchtype)
+            {
+                case SEARCH_TEXT:  // Text Search
+                    $this->special_ch = SpecialEngine::Init($this->mh, $query, $type, $pagenum, $config);
+                    // Fall-thru to Google Search
+                case SEARCH_IMAGE: // Image Search
+                    $this->search_ch = GoogleEngine::Init($this->mh, $query, $type, $pagenum, $config);
+                    break;
+                case SEARCH_VIDEO: // Video Search
+                    $this->search_ch = InvidiousEngine::init($this->mh, $query, $type, $pagenum, $config);
+                    break;
+                case SEARCH_API: // API Searc
+                    $this->special_ch = SpecialEngine::Init($this->mh, $query, $type, $pagenum, $config);
+                    $this->search_ch  = ApiEngine::Init($this->mh, $query, $type, $pagenum, $config);
+                   break;
+            }
             $count++;
 
             // Download everything in the background
@@ -79,34 +85,40 @@
             do {
                 curl_multi_exec($this->mh, $running);
             } while ($running);
+            $this->http_status = curl_getinfo($this->search_ch, CURLINFO_RESPONSE_CODE);
 
-            $http_status = curl_getinfo($this->search_ch, CURLINFO_RESPONSE_CODE);
-
-            // Check if we're Rate-Limited
-            if (($this->api_disabled) &&
-                ($http_status == '302')) {
-                sleep (1);
-                continue;
+            // Get Results
+            switch ($this->http_status)
+            {
+                case 200:
+                    // Read Search Results
+                    $this->getResults($this->search_ch,
+                                      $this->query,
+                                      $this->type,
+                                      $this->pagenum,
+                                      $config);
+                    // Occasionally we get 0 responses from Google so we retry.
+                    if (count($this->search_results) == 0) {
+                        $this->http_status = 503;
+                    }
+                    break;
+                case 302:
+                    // We're Rate-Limited so slow down a little
+                    sleep (1);
+                default:
+                    break;
             }
 
-            if ($http_status == '200') {
-                // Read Search Results
-                $this->search_results = $this->getResults($this->search_ch,
-                                                          $this->query,
-                                                          $this->type,
-                                                          $this->pagenum,
-                                                          $this->config);
-                // Occasionally we get 0 responses from Google so we retry.
-                if (count($this->search_results) == 0) {
-                    $http_status = '503';
-                }
-            }
+            //close the handles
+            if ($this->special_ch != NULL) curl_multi_remove_handle($this->mh, $this->special_ch);
+            if ($this->search_ch  != NULL) curl_multi_remove_handle($this->mh, $this->search_ch);
+            curl_multi_close($this->mh);
         }
 
         // Generate a FAKE search response which includes a link to click.
-        if ($http_status != '200') {
+        if ($this->http_status != 200) {
             // Build the URL
-            $url = $this->config['base_url'].'/search?q=';
+            $url = $config['base_url'].'/search?q=';
             if (! empty($this->query))   { $url .= urlencode($this->query); }
             if (! empty($this->type))    { $url .= '&t='.$this->type;       }
             if (! empty($this->pagenum)) { $url .= '&p='.$this->pagenum;    }
@@ -114,14 +126,19 @@
             array_push($this->search_results,
                     array (
                         "title"       => "Instance Rate-Limited",
-                        "sitename"    => $this->config['opensearch_title'],
+                        "sitename"    => $config['opensearch_title'],
                         "image"       => get_blank_image(),
                         "url"         => $url,
-                        "base_url"    => $this->config['base_url'],
+                        "base_url"    => $config['base_url'],
                         "description" => "Instance Rate-Limited. Please 'Refresh' to try again in  a few seconds."
                     )
                 );
         }
+    }
+
+    public function GetHttpStatus()
+    {
+        return $this->http_status;
     }
 
     public function GetEngineName($type)
@@ -148,26 +165,21 @@
 
     private function getResults($search_ch, $query, $type, $pagenum, &$config)
     {
-        // Check if we're using API servers.
-        if ($this->api_disabled == false) {
-            debug_var("API: $type");
-            $this->search_ch = ApiEngine::init($this->mh, $query, $type, $pagenum, $this->config);
-            return;
-        }
-
-        switch($type)
+        switch($this->searchtype)
         {
             case SEARCH_TEXT:  // Text Search
                 // Read Special Results
-                $this->special_results = SpecialEngine::GetResults($this->special_ch,
-                                                                   $query,
-                                                                   $type,
-                                                                   $pagenum,
-                                                                   $config);
+                $this->special_results = SpecialEngine::GetResults($this->special_ch, $query, $type, $pagenum, $config);
             case SEARCH_IMAGE: // Image Search
-                return GoogleEngine::getResults($search_ch, $query, $type, $config);
+                $this->search_results = GoogleEngine::GetResults($search_ch, $query, $type, $config);
+                break;
             case SEARCH_VIDEO: // Video Search
-                return InvidiousEngine::getResults($search_ch, $query, $type, $config);
-        }
+                $this->search_results = InvidiousEngine::GetResults($search_ch, $query, $type, $config);
+                break;
+            case SEARCH_API: // API Search
+                $this->special_results = SpecialEngine::GetResults($this->special_ch, $query, $type, $pagenum, $config);
+                $this->search_results  = ApiEngine::GetResults($search_ch, $query, $type, $config);
+                break;
+            }
     }
 }

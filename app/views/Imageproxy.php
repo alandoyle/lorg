@@ -17,8 +17,9 @@ class ImageproxyView extends View {
         parent::__construct($model);
     }
 
-    public function renderView()
+    public function renderView(&$config)
     {
-        $this->renderFileData($this->model->getData());
+        parent::renderView($config);
+        $this->renderFileData();
     }
 }
