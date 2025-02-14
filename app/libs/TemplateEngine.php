@@ -123,7 +123,7 @@
 		<meta name="git-commit" content="{{ $githash }}"/>
 		<meta name="git-url" content="{{ $giturl }}"/>
 {% endif; %}
-		<link title="{{ $title }}" type="application/opensearchdescription+xml" href="opensearch.xml?method=POST" rel="search"/>
+		<link title="{{ $title }}" type="application/opensearchdescription+xml" href="/opensearch.xml" rel="search"/>
 		<link rel="stylesheet" type="text/css" href="template/{{ $template }}/css/{{ $template }}.css?ts={{ time() }}"/>
 		<title>{{ $title }}</title>
 	</head>
