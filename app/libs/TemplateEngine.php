@@ -42,6 +42,13 @@
 	}
 
 	private function includeFiles($file) {
+		$code = "";
+		// Check for Common templated files
+		$fullpath = "/etc/lorg/template/common/$file";
+		if (file_exists($fullpath)) {
+			$code = file_get_contents($fullpath);
+		}
+		// Check for actual template files
 		$fullpath = "/etc/lorg/template/$this->template/$file";
 		if (file_exists($fullpath)) {
 			$code = file_get_contents($fullpath);

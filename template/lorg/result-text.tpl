@@ -56,9 +56,9 @@
 {% endif; %}
 {% foreach($results as $item): %}
         <div class="text-result-wrapper">
-            <a href="{{ $item['url'] }}" target="_blank" rel="nofollow">
+            <a href="{{ $item['url'] }}" target="{{ $item['target'] }}" rel="nofollow">
                 <div class="results-row">
-                    <div class="results-column"><img src="{{ $item['image'] }}" /></div>
+                    <div class="results-column"><img src="{{ $item['image'] }}"  style="height:26px;width:26px"/></div>
                     <div class="results-column"><strong>{{ $item['sitename'] }}</strong><br/>{{ $item['base_url'] }}</div>
                 </div>
                 <h2>{{ $item['title'] }}</h2>
