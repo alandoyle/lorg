@@ -73,7 +73,7 @@
                 case SEARCH_VIDEO: // Video Search
                     $this->search_ch = InvidiousEngine::init($this->mh, $query, $type, $pagenum, $config);
                     break;
-                case SEARCH_API: // API Searc
+                case SEARCH_API: // API Search
                     $this->special_ch = SpecialEngine::Init($this->mh, $query, $type, $pagenum, $config);
                     $this->search_ch  = ApiEngine::Init($this->mh, $query, $type, $pagenum, $config);
                    break;
@@ -130,7 +130,8 @@
                         "image"       => get_blank_image(),
                         "url"         => $url,
                         "base_url"    => $config['base_url'],
-                        "description" => "Instance Rate-Limited. Please 'Refresh' to try again in  a few seconds."
+                        "description" => "Instance Rate-Limited. Please 'Refresh' to try again in  a few seconds.",
+                        "target"      => ""
                     )
                 );
         }

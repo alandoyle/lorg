@@ -145,6 +145,8 @@ class Config extends BaseClass {
          ******************************************************************************************/
         $this->config['ua']                       = $this->getUserAgent();
         $this->config['result_count']             = 0;
+        $this->config['arc_timestamp']            = 0;
+        $this->config['arc_id']                   = '';
 
         /*******************************************************************************************
          * This is the physical directory where the application and configurable files (template,
