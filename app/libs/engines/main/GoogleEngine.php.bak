@@ -117,11 +117,13 @@ class GoogleEngine {
             array_push($results,
                 array (
                     "title"       => "Did you mean '".htmlspecialchars(utf8_decode($didyoumean->textContent))."'?",
-                    "sitename"    => $config['opensearch_title'],
+                    "sitename"    => $sitename == null ? "" : preg_replace('/[^\x20-\x7E]/',' ', $sitename->textContent),
                     "image"       => get_blank_image(),
                     "url"         => $url,
                     "base_url"    => $config['base_url'],
-                    "description" => "",
+                    "description" => $description == null ?
+                                        "No description was provided for this site." :
+                                        htmlspecialchars(utf8_decode($description->textContent)),
                     "target"      => ""
                 )
             );
