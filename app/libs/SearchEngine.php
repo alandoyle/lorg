@@ -66,9 +66,10 @@
             {
                 case SEARCH_TEXT:  // Text Search
                     $this->special_ch = SpecialEngine::Init($this->mh, $query, $type, $pagenum, $config);
-                    // Fall-thru to Google Search
+                    $this->search_ch  = GoogleEngine::Init($this->mh, $query, $type, $pagenum, $config);
+                    break;
                 case SEARCH_IMAGE: // Image Search
-                    $this->search_ch = GoogleEngine::Init($this->mh, $query, $type, $pagenum, $config);
+                    $this->search_ch = QwantEngine::Init($this->mh, $query, $type, $pagenum, $config);
                     break;
                 case SEARCH_VIDEO: // Video Search
                     $this->search_ch = InvidiousEngine::init($this->mh, $query, $type, $pagenum, $config);
@@ -105,6 +106,13 @@
                 case 302:
                     // We're Rate-Limited so slow down a little
                     sleep (1);
+                    break;
+                case 403:
+                    $webresponse = curl_multi_getcontent($this->search_ch);
+                    $json = json_decode($webresponse, true);
+                    $count = $maxloops;
+                    //@@@ Redirect to another API server.
+                    break;
                 default:
                     break;
             }
@@ -131,7 +139,8 @@
                         "url"         => $url,
                         "base_url"    => $config['base_url'],
                         "description" => "Instance Rate-Limited. Please 'Refresh' to try again in  a few seconds.",
-                        "target"      => ""
+                        "target"      => "",
+                        "thumbnail"   => get_blank_image()
                     )
                 );
         }
@@ -147,8 +156,9 @@
         switch($type)
         {
             case SEARCH_TEXT:  // Text Search
-            case SEARCH_IMAGE: // Image Search
                 return GoogleEngine::getEngineName();
+            case SEARCH_IMAGE: // Image Search
+                return QwantEngine::getEngineName();
             case SEARCH_VIDEO: // Video Search
                 return InvidiousEngine::getEngineName();
         }
@@ -171,8 +181,10 @@
             case SEARCH_TEXT:  // Text Search
                 // Read Special Results
                 $this->special_results = SpecialEngine::GetResults($this->special_ch, $query, $type, $pagenum, $config);
+                $this->search_results  = GoogleEngine::GetResults($search_ch, $query, $type, $config);
+                break;
             case SEARCH_IMAGE: // Image Search
-                $this->search_results = GoogleEngine::GetResults($search_ch, $query, $type, $config);
+                $this->search_results = QwantEngine::GetResults($search_ch, $query, $type, $config);
                 break;
             case SEARCH_VIDEO: // Video Search
                 $this->search_results = InvidiousEngine::GetResults($search_ch, $query, $type, $config);

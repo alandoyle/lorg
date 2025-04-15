@@ -22,7 +22,6 @@ class GoogleEngine {
         $results_language  = isset($_COOKIE['google_language_results'])  ? trim(htmlspecialchars($_COOKIE['google_language_results']))  : $config['google_language_results'];
         $number_of_results = isset($_COOKIE['google_number_of_results']) ? trim(htmlspecialchars($_COOKIE['google_number_of_results'])) : $config['google_number_of_results'];
         $query_encoded     = urlencode($query);
-        $arc_page          = sprintf("%02d", $pagenum * 10);
 
         // Generate arc id (Use updated Google search endpoint via unixfox's research for SearXNG)
         if ($config['arc_timestamp'] + 3600 < time()) {
@@ -44,11 +43,11 @@ class GoogleEngine {
         switch($type)
         {
             case SEARCH_IMAGE: // Image Search
-                $url .= "&oq=$query_encoded&tbm=isch&asearch=ichunk&async=_id:rg_s,_pms:s,_fmt:pc&sourceid=chrome&ie=UTF-8&ijn=$pagenum";
+                $url .= "&oq=$query_encoded&udm=2";
                 break;
             case SEARCH_TEXT: // Text Search
-                $startnum = $pagenum * 10;
-                $url .= "&start=$startnum";
+                $arc_page = sprintf("%02d", $pagenum * 10);
+                $url .= "&asearch=arc&async=arc_id:".$config['arc_id'].$arc_page.",use_ac:true,_fmt:html";
                 break;
         }
 
@@ -68,7 +67,9 @@ class GoogleEngine {
         if (isset($_COOKIE['safe_search'])) {
             $url .= '&safe=medium';
         }
-        $url .= "&asearch=arc&async=arc_id:".$config['arc_id'].$arc_page.",use_ac:true,_fmt:html";
+
+        $startnum = $pagenum * 10;
+        $url .= "&start=$startnum";
 
         // Save the URL
         $config['search_url'] = $url;

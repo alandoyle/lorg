@@ -27,7 +27,7 @@
         <div class="sub-search-button-wrapper">
 {% foreach($categories as $category): %}
             <a {{ $category['class'] }} href="./search?q={{ $query_encoded }}&t={{ $category['type'] }}" rel="nofollow"><img src="./template/{{ $template }}/images/{{ $category['typename'] }}_result.png" alt="{{ $category['description'] }} Result" title="{{ $category['description'] }} Result" />{{ $category['description'] }}</a>
-{% endforeach; %}template
+{% endforeach; %}
         </div>
         <hr/>
     </form>

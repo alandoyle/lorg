@@ -183,7 +183,8 @@ function get_curl_options($ua, $accept_langauge = '')
         CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTPS | CURLPROTO_HTTP,
         CURLOPT_MAXREDIRS       => 5,
         CURLOPT_TIMEOUT         => 18,
-        CURLOPT_VERBOSE         => false
+        CURLOPT_VERBOSE         => false,
+        CURLOPT_FOLLOWLOCATION  => true
     );
 }
 
