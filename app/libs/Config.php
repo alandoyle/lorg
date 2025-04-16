@@ -58,8 +58,7 @@ class Config extends BaseClass {
             'google_number_of_results' => 20,
             'hide_templates'           => false,
             'include_local_instance'   => true,
-            'invidious_url'            => 'https://i.lorg.dev',
-            'link_google_image'        => false,
+            'invidious_url'            => 'https://y.com.sb',
             'minify_output'            => true,
             'opensearch_title'         => 'lorg',
             'opensearch_description'   => 'lorg is a metasearch engine that respects your privacy.',
@@ -127,7 +126,6 @@ class Config extends BaseClass {
         $this->config['hide_templates']           = $this->getValue('hide_templates',                 VALUE_BOOLEAN);
         $this->config['include_local_instance']   = $this->getValue('include_local_instance',         VALUE_BOOLEAN);
         $this->config['invidious_url']            = $this->getCookieValue('invidious_url',            VALUE_STRING);
-        $this->config['link_google_image']        = $this->getValue('link_google_image',              VALUE_BOOLEAN);
         $this->config['minify_output']            = $this->getValue('minify_output',                  VALUE_BOOLEAN);
         $this->config['opensearch_title']         = $this->getValue('opensearch_title',               VALUE_STRING);
         $this->config['opensearch_description']   = $this->getValue('opensearch_description',         VALUE_STRING);

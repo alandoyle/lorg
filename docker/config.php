@@ -25,14 +25,13 @@ return [
 
     'use_client_ua'            => false,
     'use_specific_ua'          => '',
-    'link_google_image'        => false,
     'use_image_proxy'          => true,
     'minify_output'            => true,
     'include_local_instance'   => true,
 
     'wikipedia_language'       => 'en',
 
-    'invidious_url'            => 'https://i.lorg.dev',
+    'invidious_url'            => 'https://y.com.sb',
 
     'footer_message'           => '',
 ];

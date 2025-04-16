@@ -69,7 +69,12 @@
                     $this->search_ch  = GoogleEngine::Init($this->mh, $query, $type, $pagenum, $config);
                     break;
                 case SEARCH_IMAGE: // Image Search
-                    $this->search_ch = QwantEngine::Init($this->mh, $query, $type, $pagenum, $config);
+                    // Check if "Qwant Image Search" has been enabled in the settings.
+                    if ($_COOKIE['qwant_image_search'] === "on") {
+                        $this->search_ch = QwantEngine::Init($this->mh, $query, $type, $pagenum, $config);
+                    } else {
+                        $this->search_ch = GoogleEngine::Init($this->mh, $query, $type, $pagenum, $config);
+                    }
                     break;
                 case SEARCH_VIDEO: // Video Search
                     $this->search_ch = InvidiousEngine::init($this->mh, $query, $type, $pagenum, $config);
@@ -103,6 +108,7 @@
                         $this->http_status = 503;
                     }
                     break;
+                case 429:
                 case 302:
                     // We're Rate-Limited so slow down a little
                     sleep (1);
@@ -158,7 +164,11 @@
             case SEARCH_TEXT:  // Text Search
                 return GoogleEngine::getEngineName();
             case SEARCH_IMAGE: // Image Search
-                return QwantEngine::getEngineName();
+                // Check if "Qwant Image Search" has been enabled in the settings.
+                if ($_COOKIE['qwant_image_search'] === "on") {
+                    return QwantEngine::getEngineName();
+                }
+                return GoogleEngine::getEngineName();
             case SEARCH_VIDEO: // Video Search
                 return InvidiousEngine::getEngineName();
         }
@@ -184,7 +194,12 @@
                 $this->search_results  = GoogleEngine::GetResults($search_ch, $query, $type, $config);
                 break;
             case SEARCH_IMAGE: // Image Search
-                $this->search_results = QwantEngine::GetResults($search_ch, $query, $type, $config);
+                // Check if "Qwant Image Search" has been enabled in the settings.
+                if ($_COOKIE['qwant_image_search'] === "on") {
+                    $this->search_results = QwantEngine::GetResults($search_ch, $query, $type, $config);
+                } else {
+                    $this->search_results  = GoogleEngine::GetResults($search_ch, $query, $type, $config);
+                }
                 break;
             case SEARCH_VIDEO: // Video Search
                 $this->search_results = InvidiousEngine::GetResults($search_ch, $query, $type, $config);

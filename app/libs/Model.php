@@ -94,12 +94,14 @@ class Model extends BaseClass {
                     break;
                 default:
                     if (is_dir("/etc/lorg/template/$templatedir")) {
-                        array_push($templates,
-                            array (
-                                "name"      => $templatedir,
-                                "selected"  => ($templatedir == $config['template']) ? "selected" : "",
-                            )
-                        );
+                        if ($templatedir !== 'common') {
+                            array_push($templates,
+                                array (
+                                    "name"      => $templatedir,
+                                    "selected"  => ($templatedir == $config['template']) ? "selected" : "",
+                                )
+                            );
+                        }
                     }
                     break;
             }

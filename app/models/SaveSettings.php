@@ -22,12 +22,17 @@
     public function readData(&$config, $params = [])
     {
         parent::readData($params);
-
         foreach ($_REQUEST as $key => $value) {
             if ($key == 'm' || $key == 'r') {
                 continue;
             }
             setcookie($key, $value);
+        }
+        if (!isset($_REQUEST["safe_search"])) {
+            setcookie("safe_search", "off");
+        }
+        if (!isset($_REQUEST["qwant_image_search"])) {
+            setcookie("qwant_image_search", "off");
         }
     }
 }

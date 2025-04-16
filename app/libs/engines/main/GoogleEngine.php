@@ -22,6 +22,7 @@ class GoogleEngine {
         $results_language  = isset($_COOKIE['google_language_results'])  ? trim(htmlspecialchars($_COOKIE['google_language_results']))  : $config['google_language_results'];
         $number_of_results = isset($_COOKIE['google_number_of_results']) ? trim(htmlspecialchars($_COOKIE['google_number_of_results'])) : $config['google_number_of_results'];
         $query_encoded     = urlencode($query);
+        $ua                = $config['ua'];
 
         // Generate arc id (Use updated Google search endpoint via unixfox's research for SearXNG)
         if ($config['arc_timestamp'] + 3600 < time()) {
@@ -44,6 +45,7 @@ class GoogleEngine {
         {
             case SEARCH_IMAGE: // Image Search
                 $url .= "&oq=$query_encoded&udm=2";
+                $ua = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:33.0) Gecko/20120101 Firefox/33.0';
                 break;
             case SEARCH_TEXT: // Text Search
                 $arc_page = sprintf("%02d", $pagenum * 10);
@@ -75,11 +77,16 @@ class GoogleEngine {
         $config['search_url'] = $url;
 
         $google_ch = curl_init($url);
-        curl_setopt_array($google_ch, get_curl_options($config['ua'], $config['accept_langauge']));
-        curl_setopt($google_ch, CURLOPT_USERAGENT, $config['ua']);
+        curl_setopt_array($google_ch, get_curl_options($ua, $config['accept_langauge']));
+        curl_setopt($google_ch, CURLOPT_USERAGENT, $ua);
         curl_multi_add_handle($mh, $google_ch);
 
         return $google_ch;
+    }
+
+    static function getEngineName()
+    {
+        return "Google";
     }
 
     static function GetResults($search_ch, $query, $type, &$config)
@@ -93,11 +100,6 @@ class GoogleEngine {
             default:
                 return [];
         }
-    }
-
-    static function getEngineName()
-    {
-        return "Google";
     }
 
     static function getTextResults($search_ch, &$config)
@@ -191,13 +193,6 @@ class GoogleEngine {
         return $results;
     }
 
-    static function getImageURL($imageurl, $siteurl, $config)
-    {
-        return (($config['link_google_image'] === true) ?
-                    get_image_url($imageurl, $config) :
-                    $siteurl);
-    }
-
     static function getImageResults($search_ch, $query, &$config)
     {
         if (curl_getinfo($search_ch)['http_code'] == '302') {
@@ -209,27 +204,55 @@ class GoogleEngine {
         $results     = [];
         $webresponse = curl_multi_getcontent($search_ch);
         $xpath       = get_xpath($webresponse);
+
         if ($xpath == null) {
             return $results;
         }
 
         $resultcount = 0;
-        foreach($xpath->query("//div[contains(@class, 'rg_meta')]") as $result)
-        {
-            $resultcount++;
-            $json_response = json_decode($result->textContent, TRUE);
-            $thumbnail = $json_response["tu"];
+        foreach($xpath->query("//td[@class='e3goi']") as $result) {
+            $url = $xpath->evaluate(".//table[@class='RntSmf']//tr//td//a//@href", $result);
+            if ($url == null) {
+                continue;
+            }
 
-            $url = GoogleEngine::getImageURL($json_response["ou"], $json_response["ru"], $config);
+            $title       = $xpath->evaluate(".//span[contains(@class, 'x3G5ab')]//span[contains(@class, 'fYyStc')]", $result);
+            $sitename    = $xpath->evaluate(".//span[contains(@class, 'F9iS2e')]//span[contains(@class, 'fYyStc')]", $result);
+            $thumbnail   = $xpath->evaluate(".//img[contains(@class, 'DS1iW')]/@src", $result);
 
+            if (!empty($title[0])) {
+                $title = trim($title[0]->textContent);
+            }
+            if (!empty($sitename[0])) {
+                $sitename = trim($sitename[0]->textContent);
+            }
+            if (!empty($thumbnail[0])) {
+                $thumbnail = trim($thumbnail[0]->textContent);
+            }
+            if (!empty($url[0])) {
+                $querystring = str_replace("/url?", "", trim($url[0]->textContent));
+                $params = [];
+                /*******************************************************************************************
+                 * Build args
+                 ******************************************************************************************/
+                $queryarray = explode('&',html_entity_decode($querystring));
+                foreach ($queryarray as $value) {
+                    $newarg = explode('=', $value);
+                    if (count($newarg) === 2) {
+                        $params[$newarg[0]] = urldecode($newarg[1]);
+                    }
+                }
+                $url = $params['url'];
+            }
             array_push($results,
                 array (
-                    "title"       => $json_response["pt"],
-                    "sitename"    => $json_response["st"],
-                    "thumbnail"   => get_image_url($thumbnail, $config),
-                    "url"         => $url,
+                    "title"     => htmlspecialchars($title),
+                    "sitename"  => htmlspecialchars($sitename),
+                    "thumbnail" => get_image_url($thumbnail, $config),
+                    "url"       => $url
                 )
             );
+            $resultcount++;
         }
         $config['result_count'] = $resultcount;
 

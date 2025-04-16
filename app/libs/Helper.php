@@ -154,7 +154,7 @@ function get_curl_options($ua, $accept_langauge = '')
     }
 
     $headers = [
-        'Accept: */*',
+        'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         "Accept-Language: $accept_langauge,en;q=0.9",
         'Dnt: 1',
         'Pragma: no-cache',

@@ -29,17 +29,21 @@
                                     <label>Number of results per page</label>
                                     <input type="number" name="google_number_of_results" placeholder="E.g.: 20" value="{{ $google_number_of_results }}"/>
                                 </div>
-                                <div>
-                                    <label>Safe search</label>
-                                    <input type="checkbox" name="safe_search"<?php echo isset($_COOKIE["safe_search"]) ? "checked"  : ""; ?> >
-                                </div>
                             </div>
 
-                            <h2>Invidious settings</h2>
+                            <h2>Extra settings</h2>
                             <div class="settings-textbox-container">
                                 <div>
-                                    <span>Instance URL</span>
-                                    <input type="text" name="invidious_url" placeholder="E.g.: https://i.lorg.dev" value="{{ $invidious_url }}"/>
+                                    <label>Safe search</label>
+                                    <input type="checkbox" name="safe_search" <?php echo ($_COOKIE["safe_search"] === 'on') ? "checked"  : ""; ?> >
+                                </div>
+                                <div>
+                                    <label>Use Qwant Image Search</label>
+                                    <input type="checkbox" name="qwant_image_search" <?php echo ($_COOKIE["qwant_image_search"] === 'on') ? "checked"  : ""; ?> >
+                                </div>
+                                <div>
+                                    <span>Invidious URL</span>
+                                    <input type="text" name="invidious_url" placeholder="E.g.: https://y.com.sb" value="{{ $invidious_url }}"/>
                                 </div>
                             </div>
                             <div>
