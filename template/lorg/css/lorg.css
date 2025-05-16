@@ -430,6 +430,8 @@ input[type='search'] {
     color: var(--result-fg);
 }
 
+.image-result-container img,
+.video-result-container img,
 .special-round-image-corners,
 .round-corners {
     border-radius: 12px;

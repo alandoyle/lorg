@@ -17,7 +17,6 @@ class ImageproxyModel extends Model {
     public function readData(&$config, $params = [])
     {
         $url = urldecode(array_key_exists('url', $params) ? $params['url'] : '');
-
         if (empty($url)) {
             $error = "ERROR: No URL provided!";
             $this->data = [
@@ -26,7 +25,8 @@ class ImageproxyModel extends Model {
                 'type' => 'text/plain',
             ];
         } else {
-            $this->data  = download_url($url, $config['ua']);
+            $this->data  = download_url($url, $_SERVER["HTTP_USER_AGENT"]);
+            usleep(5);
         }
     }
 }

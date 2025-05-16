@@ -31,8 +31,8 @@
         if (!isset($_REQUEST["safe_search"])) {
             setcookie("safe_search", "off");
         }
-        if (!isset($_REQUEST["qwant_image_search"])) {
-            setcookie("qwant_image_search", "off");
+        if (!isset($_REQUEST["google_image_search"])) {
+            setcookie("google_image_search", "off");
         }
     }
 }

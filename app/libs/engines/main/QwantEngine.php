@@ -31,8 +31,8 @@ class QwantEngine {
         $config['search_url'] = $url;
 
         $qwant_ch = curl_init($url);
-        curl_setopt_array($qwant_ch, get_curl_options($config['ua'], $config['accept_langauge']));
-        curl_setopt($qwant_ch, CURLOPT_USERAGENT, $config['ua']);
+        curl_setopt_array($qwant_ch, get_curl_options($_SERVER["HTTP_USER_AGENT"], $config['accept_langauge']));
+        curl_setopt($qwant_ch, CURLOPT_USERAGENT, $_SERVER["HTTP_USER_AGENT"]);
         curl_multi_add_handle($mh, $qwant_ch);
 
         return $qwant_ch;
@@ -73,7 +73,7 @@ class QwantEngine {
                 array (
                     "title"     => htmlspecialchars($imgs[$i]["title"]),
                     "sitename"  => $url,
-                    "thumbnail" => htmlspecialchars($imgs[$i]["thumbnail"]),
+                    "thumbnail" => get_image_url(urlencode($imgs[$i]["thumbnail"]), $config),
                     "url"       => $siteurl
                 )
             );
