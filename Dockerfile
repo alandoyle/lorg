@@ -7,7 +7,7 @@ ENV SCRIPT_ROOT=/usr/share/lorg
 
 # Install software
 RUN apt-get -qq update && apt-get -qq upgrade -y && apt-get -qq install git sudo -y
-RUN apt-get -qq install nginx-core php php-fpm php-common php-curl php-dom tzdata supervisor -y
+RUN apt-get -qq install nginx-core php php-fpm php-common php-curl php-dom tzdata supervisor dos2unix -y
 RUN rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
 RUN sed -i -e 's/;\(clear_env\) = .*/\1 = no/i' \
 		-e 's/^\(user\|group\) = .*/\1 = app/i' \
@@ -34,6 +34,9 @@ ENV PHP_WORKER_MAX_CHILDREN=5
 ENV PHP_WORKER_MEMORY_LIMIT=256M
 
 COPY docker/startup.sh /startup.sh
+RUN dos2unix /startup.sh
+RUN dos2unix /etc/nginx/sites-enabled/default
+RUN dos2unix /etc/supervisor/conf.d/supervisord.conf
 RUN chmod 755 /startup.sh
 
 CMD ["/startup.sh"]
