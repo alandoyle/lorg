@@ -64,7 +64,7 @@ sed -i.bak "s/^\(pm.max_children\) = \(.*\)/\1 = ${PHP_WORKER_MAX_CHILDREN}/" \
 rm -f /tmp/error.log && mkfifo /tmp/error.log
 
 # Make sure the PHP FPM socket symlink exists
-if [ ! -h /var/run/php-fpm.sock ] ; then
+if [ ! -h /var/run/php/php-fpm.sock ] ; then
 	ln -s /var/run/php/php8.1-fpm.sock /var/run/php/php-fpm.sock
 fi
 
